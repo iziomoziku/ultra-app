@@ -1,0 +1,73 @@
+export interface Schedule {
+    id: string
+    complete: boolean
+    routine: Routine
+}
+
+export interface Plan {
+    id: string
+    name: string
+    Routines: Routine[]
+    type: 'Plan'
+}
+
+export interface Routine {
+    id: string
+    name: string
+    exercises: Exercise[]
+    type: 'Routine'
+    // log: RoutineLog[]
+}
+
+export interface Exercise {
+    id: string
+    name: string
+    complete: boolean
+    set: number
+    rep: Rep[]
+    log: ExerciseLog[]
+}
+
+export interface Rep {
+    id: string
+    rep: string
+}
+
+export interface ExerciseLog {
+    id: string
+    set: string[]
+    note: string
+}
+
+export interface Event {
+    id: string,
+    title: string,
+    start: Date,
+    end: Date,
+    schedule: Schedule | undefined
+}
+
+export interface mainContextType {
+    schedule: Schedule[]
+    setSchedule: React.Dispatch<React.SetStateAction<Schedule[]>>
+    Routine: Routine[]
+    setRoutine: React.Dispatch<React.SetStateAction<Routine[]>>
+    Plans: Plan[]
+    setPlans: React.Dispatch<React.SetStateAction<Plan[]>>
+    Exercises: Exercise[]
+    setExercises: React.Dispatch<React.SetStateAction<Exercise[]>>
+    updatedSchedule: (routine: Routine) => void
+    updateScheduledRoutine: (routineID: string, exercise: Exercise) => void
+    addExerciseSet: (itemID: string, exerciseID: string) => void
+    deleteExerciseSet: (exerciseID: string, setID: string) => void
+    addRoutineToSchedule: (routine: Routine) => void
+    removeRoutineFromSchedule: (itemID: string) => void
+    markExerciseAsComplete: (itemID: string, exerciseID: string, log: ExerciseLog) => void
+    completeRoutine: (item: Schedule) => void
+    UpcomingSessionModal: boolean,
+    setUpcomingSessionModal: React.Dispatch<React.SetStateAction<boolean>>
+    Events: Event[]
+    setEvents: React.Dispatch<React.SetStateAction<Event[]>>
+    calendarEventModal: boolean
+    setCalendarEventModal: React.Dispatch<React.SetStateAction<boolean>>
+}

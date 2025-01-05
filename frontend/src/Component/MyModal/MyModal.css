@@ -1,0 +1,342 @@
+.modal.show .modal-dialog {
+    max-width: 560px;
+}
+
+.modal-body {
+    gap: var(--pop-up-spacings-content-link);
+}
+
+.modal-content {
+    border-radius: var(--corner-radius-primary-card);
+    padding: var(--pop-up-spacings-padding);
+    gap: var(--pop-up-spacings-general)
+}
+
+  /* 
+  
+  EditSession Modal
+  
+  */
+
+.Exercise-stat-container {
+    gap: 6px;
+}
+
+.Routine-wrapper-top {
+    gap: 12px;
+}
+
+
+.Add-Routine {
+    gap: 6px;
+}
+
+.Add-Routine-List {
+  gap: 10px;
+}
+
+.Add-Routine-container {
+    gap: var(--pop-up-spacings-content-inside);
+}
+
+/* Animation */
+
+/* Initial state when adding the element to the DOM */
+.routine-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  
+  /* State after triggering the transition in */
+  .routine-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  /* Initial state before removing the element from the DOM */
+  .routine-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* State after triggering the transition out */
+  .routine-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 300ms, transform 300ms;
+  }
+
+  /* For the plus icon animation */
+.icon-default {
+    transition: transform 0.3s ease;
+    transform: rotate(0deg);
+  }
+  
+  .icon-rotated {
+    transition: transform 0.3s ease;
+    transform: rotate(45deg);
+  }
+
+  .expand-exit {
+    max-height: 500px;
+  }
+  .expand-exit.expand-exit-active {
+    max-height: 0;
+    transition: max-height 300ms ease-in-out;
+  }
+
+
+  /*****
+
+  EDIT MODAL
+
+  ******/
+  
+
+  .edit-workout-header-row, .edit-workout-data-cell {
+    padding: 0 8px;
+  }
+
+  .quantity-weight-header, .quantity-weight-data-cell {
+    gap: 16px;
+  }
+  .quantity-weight-header img {
+    width: 9.6px;
+    height: 9.6px;
+    top: 3.33px;
+    left: 3.33px;
+    gap: 0px;
+    border: 1.5px 0px 0px 0px;
+    opacity: 0px;
+  }
+
+  .edit-workout-quantity, .edit-workout-weight {
+    width: 42px;
+height: 24px;
+padding: 2px 12px 2px 12px;
+gap: 6px;
+border-radius: 4px;
+opacity: 0px;
+
+  }
+
+
+  .quantity-weight-data-cell-wrapper {
+    gap: 8px;
+  }
+
+  .data-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  .edit-workout-data-cell {
+    background-color: var(--background-card);
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
+
+
+  /***
+
+ADD SESSION
+
+  ***/
+
+  .addSession .modal-content {
+    gap: var(--pop-up-spacings-heading-content);
+  }
+
+  .addSession .Routine-Wrapper {
+    background-color: var(--grey-3);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px
+  }
+
+  .addSession .Routine-Wrapper .add-routine-active {
+    height: 28px;
+    padding: 4px 12px 4px 12px;
+    gap: 6px;
+    border-radius: var(--corner-radius-button);
+    color: var(--typography-on-dark-bg-heading);
+  }
+  .addSession .Routine-Wrapper .add-routine {
+    opacity: 40%;
+  height: 28px;
+  padding: 4px 12px 4px 12px;
+  gap: 6px;
+  border-radius: var(--corner-radius-button);
+  }
+
+
+  .addSession .step-choose-preset {
+    gap: var(--pop-up-spacings-content);
+  }
+
+  .addSession .routines-to-add, .addSession .plans-to-add {
+    gap: var(--pop-up-spacings-content-inside);
+  }
+
+  
+
+  .addSession .Routine-Container.Choose-Routine .Exercise-List::before, 
+  .addSession .Routine-Container.Choose-Routine .Exercise::before,
+  .addSession .Routine-title-number,
+  .addSession .Choose-Routine .Routine-add, .addSession .Choose-Routine .Routine-delete {
+    display: none !important;
+  }
+  .addSession .Routine-Container.Choose-Routine .Exercise {
+    padding-left: 0 !important;
+  }
+
+  .addSession .Routine-Container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pop-up-spacings-content);
+    max-height: 410px;
+    overflow-y: auto;
+    /* padding-right: 24px; */
+  }
+
+
+  .addSession .Exercise-stat {
+font-size: 14px;
+font-weight: 400;
+line-height: 19.6px;
+color: var(--grey-1);
+  }
+
+
+  .addSession .Plan-Container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pop-up-spacings-content);
+  }
+
+  /* The scrollbar itself */
+.addSession .Routine-Container::-webkit-scrollbar {
+  width: 10px; /* Width of the vertical scrollbar */
+  /* height: 8px; Height of the horizontal scrollbar */
+  padding-left: 24px;
+}
+
+/* The draggable thumb (handle) of the scrollbar */
+.addSession .Routine-Container::-webkit-scrollbar-thumb {
+  width: 10px;
+  background-color: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+  border: 2px solid #f1f1f1; /* Adds a border to the thumb */
+}
+
+/* The track of the scrollbar */
+.addSession .Routine-Container::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Background color of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+/* On hover, change thumb color */
+.addSession .Routine-Container::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+
+/*****
+
+STEP OVERVIEW
+
+****/
+
+.addSession .step-overview .Routine-add {
+  display: none !important;
+}
+
+.addSession .step-overview .Routine-title-number {
+  display: block !important;
+}
+
+.addSession .step-overview .Routine-Wrapper {
+ background-color: transparent !important;
+ padding: 0;
+}
+
+.addSession .step-overview .Exercise-stat {
+color: var(--grey-2);
+}
+
+
+/******
+
+ROUTINE FLOW
+
+******/
+
+.Routine-Flow .Routine-title-number {
+ display: block !important;
+}
+
+/******
+
+ADD MONTHLY GOAL
+
+******/
+
+.drop-down-month-select {
+  padding: 4px 12px;
+  background-color: white;
+  /* background-color: red; */
+  z-index: 2;
+  height: 96px;
+  border: 1px solid rgba(186, 186, 186, 1);
+  border-radius: var(--corner-radius-button);
+  top: 0;
+  right: 0;
+
+}
+.drop-down-month {
+  background-color: white;
+  overflow-y: auto;
+  display: flex;
+}
+
+.drop-down-month span {
+  color: var(--grey-4);
+}
+
+.drop-down-active .drop-down-month {
+  display: none;
+}
+.drop-down-active .drop-down-month-select {
+  height: 28px;
+  padding-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+.fieldset-goal .target-number, .fieldset-goal .target-desc {
+  width: 40px;
+  text-align: center;
+display: flex;
+align-items: center;
+height: 28px;
+padding: 4px 12px 4px 12px;
+gap: 6px;
+border-radius: var(--corner-radius-button);
+opacity: 0px;
+border: 1px solid rgba(186, 186, 186, 1);
+
+font-size: 14px;
+font-weight: 500;
+line-height: 19.6px;
+
+color: var(--grey-1);
+}
+.fieldset-goal .target-desc {
+  width: 88px;
+}

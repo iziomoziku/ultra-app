@@ -1,0 +1,100 @@
+.track-container, .track-top-container {
+    gap: 24px;
+}
+
+.monthly-goal-header {
+    gap: 18px;
+}
+
+.monthly-goal-details-container {
+    gap: 12px;
+}
+
+.monthly-goal-details-stats {
+    color: var(--typography-on-light-bg-body-secondary)
+}
+
+
+.monthly-goal-container, .monthly-notes-container {
+height: 100%;
+gap: 10px;
+overflow-y: auto;
+}
+
+.monthly-goal, .monthly-notes {
+height: 125px;
+padding: 16px;
+border-radius: var(--corner-radius-secondary-card);
+    
+}
+
+.monthly-notes {
+    background-color: var(--grey-3);
+}
+
+.goal-history-month {
+    background: rgba(206, 206, 206, 1);
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.month-history-details {
+    gap: 8px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: 24px;
+}
+
+.add-monthly-goal-button {
+    color: var(--typography-on-light-bg-body-primary);
+}
+
+/* 
+
+WEIGHT PROGRESS TRACKING
+
+*/
+
+.search-container .search {
+    height: 25px;
+    width: 200px;
+    padding: 4px 12px 4px 12px;
+    gap: 6px;
+    border-radius: var(--corner-radius-button);
+    opacity: 0px;
+}
+
+.search-container .search input {
+    
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16.8px;
+    text-align: left;
+    color: var(--typography-on-light-background-body-secondary);
+    
+    
+}
+.search-container .filter {
+
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.progress-workout-button {
+    background-color: var(--grey-2);
+}
+
+/* 
+
+CHART
+
+*/
+
+.recharts-responsive-container {
+    background: white;
+    border-radius: 14px;
+}
+
+.recharts-tooltip-wrapper {
+    width: fit-content;
+}

@@ -1,0 +1,9 @@
+.library-tabs-container {
+    gap: 8px;
+}
+
+.library-header {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}

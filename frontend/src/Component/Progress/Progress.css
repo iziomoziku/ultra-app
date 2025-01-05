@@ -1,0 +1,29 @@
+.progress-wrapper {
+    gap: 18px;
+}
+
+.progress-bar-wrapper {
+gap: 12px;
+}
+
+.progress {
+    height: 16px;
+    border-radius: 10px;
+}
+.progress-bar {
+    background-color: var(--typography-secondary) !important;
+}
+
+.link {
+    color: var(--typography-primary) !important;
+    gap: 4px;
+}
+
+label {
+    color: var(--typography-on-light-bg-body-primary);
+}
+
+.progress-label-container {
+    color: var(--typography-secondary);
+
+}

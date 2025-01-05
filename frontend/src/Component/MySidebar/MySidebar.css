@@ -1,0 +1,44 @@
+.css-1wvake5 {
+    width: 100% !important;
+    max-width: 120px !important;
+    min-width: 120px !important;
+    background-color: var(--background-side-panel);
+    padding: 48px 0;
+}
+
+.css-dip3t8 {
+    background-color: inherit !important;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+.ps-menu-button {
+    height: 100% !important;
+}
+
+/* .ps-menuitem-root:hover {
+    background: none !important;
+} */
+
+.desktop-side-menu-container {
+    gap: 24px;
+}
+
+.ps-menuitem-root:hover .ps-menu-button {
+    background: none !important;
+}
+
+.user-profile {
+    gap: 8px;
+}
+
+.desktop-side-menu h5 {
+    text-wrap: wrap;
+}
+
+/* .ps-sidebar-container.css-dip3t8 {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    flex-direction: column;
+} */
