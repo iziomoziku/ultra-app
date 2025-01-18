@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/iziomoziku/Documents/Development/UltraApp/api/api.csproj": {}
+    "/Users/iziomoziku/Documents/Api/Api.csproj": {}
   },
   "projects": {
-    "/Users/iziomoziku/Documents/Development/UltraApp/api/api.csproj": {
+    "/Users/iziomoziku/Documents/Api/Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/iziomoziku/Documents/Development/UltraApp/api/api.csproj",
-        "projectName": "api",
-        "projectPath": "/Users/iziomoziku/Documents/Development/UltraApp/api/api.csproj",
+        "projectUniqueName": "/Users/iziomoziku/Documents/Api/Api.csproj",
+        "projectName": "Api",
+        "projectPath": "/Users/iziomoziku/Documents/Api/Api.csproj",
         "packagesPath": "/Users/iziomoziku/.nuget/packages/",
-        "outputPath": "/Users/iziomoziku/Documents/Development/UltraApp/api/obj/",
+        "outputPath": "/Users/iziomoziku/Documents/Api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/iziomoziku/.nuget/NuGet/NuGet.Config"
@@ -55,10 +55,6 @@
               "target": "Package",
               "version": "[8.0.10, )"
             },
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[9.0.0, )"
@@ -71,7 +67,7 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[7.2.0, )"
+              "version": "[6.6.2, )"
             }
           },
           "imports": [

@@ -1,38 +1,35 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
-using api.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-// Initializes the application builder and configuration services.
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Load configuration from appsettings.json and environment variables
-// builder.Configuration.AddEnvironmentVariables();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-// Adds support for endpoint discovery for OpenAPI/Swagger.
-builder.Services.AddEndpointsApiExplorer();
-// Adds Swagger for generating API documentation.
-builder.Services.AddSwaggerGen();
-
-// Register DbContext
-// Reads the database connection string from the `appsettings.json` file under `ConnectionStrings.UltraApiDbConnection`.
 var connectionString = builder.Configuration.GetConnectionString("UltraApiDbConnection");
 
-// Registers the database context (AppDbContext) with dependency injection and configures it to use SQL Server.
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString).EnableSensitiveDataLogging());
 
-// Adds Identity support for user and role management.
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()  
-    .AddEntityFrameworkStores<AppDbContext>()  // Configures Identity to use Entity Framework with the AppDbContext.
-    .AddDefaultTokenProviders();  // Adds default token providers for password resets and account confirmation.
 
-// Specifies JWT as the default authentication scheme.
-// Specifies JWT as the default challenge scheme.
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.WebHost.ConfigureKestrel(serverOptions => {
+    serverOptions.ListenAnyIP(8081); // Change to another port like 5000
+});
+
+// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddAuthorization(); // This registers authorization services
+builder.Services.AddScoped<JwtTokenService>();
+
+// Authentication for JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,7 +37,6 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    // Configures JWT token validation parameters.
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -51,53 +47,54 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+
+    options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully");
+                return Task.CompletedTask;
+            }
+        };
 });
 
-builder.Services.AddControllers();
 
-// Add CORS configuration
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
-});
-
-
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(8080); // Change to another port like 5000
-});
-var app = builder.Build();
-
-app.UseRouting();
-app.UseCors("AllowAll");
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "UltraAppAPI V1");
-    c.RoutePrefix = string.Empty; // Swagger UI at root
-});
-
-
-app.UseEndpoints(endpoints =>
-{
-    _ = endpoints.MapControllers();
-    _ = endpoints.MapGet("/", async context =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        context.Response.Redirect("/swagger");
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
+
+
+var app = builder.Build();
+app.UseCors("AllowAll");
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseRouting(); // Ensure routing is enabled
+app.UseAuthentication();
+// Add this to ensure authorization is enabled
+app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers(); // Map controllers
+});
+
+
 // app.UseHttpsRedirection();
 app.Run();
-

@@ -8,7 +8,7 @@ using api.Data;
 
 #nullable disable
 
-namespace api.Migrations
+namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -21,6 +21,27 @@ namespace api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ExerciseRoutine", b =>
+                {
+                    b.Property<string>("ExercisesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ExercisesUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoutinesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoutinesUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ExercisesId", "ExercisesUserId", "RoutinesId", "RoutinesUserId");
+
+                    b.HasIndex("RoutinesId", "RoutinesUserId");
+
+                    b.ToTable("RoutineExercises", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -220,28 +241,12 @@ namespace api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("api.Models.Event", b =>
+            modelBuilder.Entity("api.Models.Exercise", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("api.Models.Exercise", b =>
-                {
-                    b.Property<string>("Id")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("Complete")
@@ -251,15 +256,16 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoutineId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Set")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("RoutineId");
+                    b.HasKey("Id", "UserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Exercises");
                 });
@@ -269,7 +275,13 @@ namespace api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ExerciseId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ExerciseUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Note")
@@ -284,27 +296,9 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExerciseId");
+                    b.HasIndex("ExerciseId", "ExerciseUserId");
 
-                    b.ToTable("ExerciseLog");
-                });
-
-            modelBuilder.Entity("api.Models.Plan", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Plans");
+                    b.ToTable("ExerciseLogs");
                 });
 
             modelBuilder.Entity("api.Models.Rep", b =>
@@ -315,14 +309,17 @@ namespace api.Migrations
                     b.Property<string>("ExerciseId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ExerciseUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Reps")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExerciseId");
+                    b.HasIndex("ExerciseId", "ExerciseUserId");
 
-                    b.ToTable("Rep");
+                    b.ToTable("Reps");
                 });
 
             modelBuilder.Entity("api.Models.Routine", b =>
@@ -330,25 +327,20 @@ namespace api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PlanId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ScheduleId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "UserId");
 
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("ScheduleId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Routines");
                 });
@@ -358,17 +350,52 @@ namespace api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("Complete")
                         .HasColumnType("bit");
 
-                    b.Property<string>("EventId")
+                    b.Property<string>("RoutineId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("RoutineId1")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("EventId");
+                    b.Property<string>("RoutineUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoutineUserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("RoutineId", "RoutineUserId")
+                        .IsUnique()
+                        .HasFilter("[RoutineId] IS NOT NULL AND [RoutineUserId] IS NOT NULL");
+
+                    b.HasIndex("RoutineId1", "RoutineUserId1")
+                        .IsUnique()
+                        .HasFilter("[RoutineId1] IS NOT NULL AND [RoutineUserId1] IS NOT NULL");
 
                     b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("ExerciseRoutine", b =>
+                {
+                    b.HasOne("api.Models.Exercise", null)
+                        .WithMany()
+                        .HasForeignKey("ExercisesId", "ExercisesUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Routine", null)
+                        .WithMany()
+                        .HasForeignKey("RoutinesId", "RoutinesUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -424,46 +451,62 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.Exercise", b =>
                 {
-                    b.HasOne("api.Models.Routine", null)
-                        .WithMany("Exercises")
-                        .HasForeignKey("RoutineId");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Models.ExerciseLog", b =>
                 {
-                    b.HasOne("api.Models.Exercise", null)
+                    b.HasOne("api.Models.Exercise", "Exercise")
                         .WithMany("Log")
-                        .HasForeignKey("ExerciseId");
+                        .HasForeignKey("ExerciseId", "ExerciseUserId");
+
+                    b.Navigation("Exercise");
                 });
 
             modelBuilder.Entity("api.Models.Rep", b =>
                 {
                     b.HasOne("api.Models.Exercise", null)
                         .WithMany("Rep")
-                        .HasForeignKey("ExerciseId");
+                        .HasForeignKey("ExerciseId", "ExerciseUserId");
                 });
 
             modelBuilder.Entity("api.Models.Routine", b =>
                 {
-                    b.HasOne("api.Models.Plan", null)
-                        .WithMany("Routines")
-                        .HasForeignKey("PlanId");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.HasOne("api.Models.Schedule", null)
-                        .WithMany("Routines")
-                        .HasForeignKey("ScheduleId");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Models.Schedule", b =>
                 {
-                    b.HasOne("api.Models.Event", null)
-                        .WithMany("Schedule")
-                        .HasForeignKey("EventId");
-                });
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("api.Models.Event", b =>
-                {
-                    b.Navigation("Schedule");
+                    b.HasOne("api.Models.Routine", "Routine")
+                        .WithOne()
+                        .HasForeignKey("api.Models.Schedule", "RoutineId", "RoutineUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("api.Models.Routine", null)
+                        .WithOne("Schedule")
+                        .HasForeignKey("api.Models.Schedule", "RoutineId1", "RoutineUserId1");
+
+                    b.Navigation("Routine");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Models.Exercise", b =>
@@ -473,19 +516,9 @@ namespace api.Migrations
                     b.Navigation("Rep");
                 });
 
-            modelBuilder.Entity("api.Models.Plan", b =>
-                {
-                    b.Navigation("Routines");
-                });
-
             modelBuilder.Entity("api.Models.Routine", b =>
                 {
-                    b.Navigation("Exercises");
-                });
-
-            modelBuilder.Entity("api.Models.Schedule", b =>
-                {
-                    b.Navigation("Routines");
+                    b.Navigation("Schedule");
                 });
 #pragma warning restore 612, 618
         }
