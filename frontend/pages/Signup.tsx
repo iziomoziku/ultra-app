@@ -12,13 +12,13 @@ const Signup = () => {
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5001/api/Auth/signup", {
+            await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}/api/Auth/signup`, {
                 username,
                 email,
                 password
             });
             alert("Signup successful!");
-            navigate("/"); // Redirect to home or login
+            navigate("/login"); // Redirect to login
         } catch (err: any) {
             setError(err.response?.data?.message || "An error occurred.");
         }

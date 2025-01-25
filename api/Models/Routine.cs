@@ -12,8 +12,6 @@ namespace api.Models
  
         public string Type {get; set;} = "Routine";
 
-        // Foreign Key
-        // public string? ScheduleId {get; set;} 
 
         // Reference Navigation to dependent
         [JsonIgnore] // Prevent circular reference
@@ -22,8 +20,12 @@ namespace api.Models
         // Many to Many relationship
         public List<Exercise>? Exercises { get; set; } = new();
 
+        [JsonIgnore] // Prevent circular reference
         public string? UserId { get; set; } // Foreign key to IdentityUser
+        
+        [JsonIgnore] // Prevent circular reference
         public IdentityUser? User { get; set; } // Navigation property
+
 
     }
 }

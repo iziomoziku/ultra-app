@@ -22,6 +22,7 @@ namespace api.Data
         public DbSet<Rep> Reps { get; set; }  // Add Rep
         public DbSet<ExerciseLog> ExerciseLogs { get; set; }  // Add ExerciseLog
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -38,13 +39,17 @@ namespace api.Data
             modelBuilder.Entity<Schedule>()
                 .HasKey(s => new { s.Id, s.UserId });
 
-
             modelBuilder.Entity<Schedule>()
                 .HasOne(s => s.Routine)
-                .WithOne()
-                .HasForeignKey<Schedule>(s => new { s.RoutineId, s.RoutineUserId })
+                .WithMany()
+                .HasForeignKey(s => new { s.RoutineId, s.RoutineUserId })
                 .OnDelete(DeleteBehavior.NoAction); // Adjust delete behavior as needed
 
+            // Schedule ↔ Exercise: Many-to-Many 
+            modelBuilder.Entity<Schedule>()
+                .HasMany(r => r.Exercises)
+                .WithMany(e => e.Schedules)
+                .UsingEntity(j => j.ToTable("ScheduleExercises"));
 
             // Many-to-Many Relationship between Routine and Exercise
             modelBuilder.Entity<Routine>()

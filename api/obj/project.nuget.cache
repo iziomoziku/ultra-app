@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "uKz6WmbyMo0=",
+  "dgSpecHash": "JIRMdw7aXbg=",
   "success": true,
-  "projectFilePath": "/Users/iziomoziku/Documents/Api/Api.csproj",
+  "projectFilePath": "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj",
   "expectedPackageFiles": [
     "/Users/iziomoziku/.nuget/packages/azure.core/1.38.0/azure.core.1.38.0.nupkg.sha512",
     "/Users/iziomoziku/.nuget/packages/azure.identity/1.11.4/azure.identity.1.11.4.nupkg.sha512",

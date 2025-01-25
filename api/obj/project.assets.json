@@ -5103,11 +5103,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/iziomoziku/Documents/Api/Api.csproj",
+      "projectUniqueName": "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj",
       "projectName": "Api",
-      "projectPath": "/Users/iziomoziku/Documents/Api/Api.csproj",
+      "projectPath": "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj",
       "packagesPath": "/Users/iziomoziku/.nuget/packages/",
-      "outputPath": "/Users/iziomoziku/Documents/Api/obj/",
+      "outputPath": "/Users/iziomoziku/Documents/Development/UltraApp/Api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/iziomoziku/.nuget/NuGet/NuGet.Config"

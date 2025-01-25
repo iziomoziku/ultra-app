@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import {  useState } from 'react'
 import { CSSTransition } from 'react-transition-group';
 import Plus from '/Icons/plus.svg'
 import Trash from '/Icons/trash.svg'
@@ -23,7 +23,7 @@ interface Props {
 const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
 
 
-    const { Exercises, removeRoutineFromSchedule, updateScheduledRoutine, UpcomingSessionModal, calendarEventModal } = useMainContext()
+    const { Exercises, removeRoutineFromSchedule, addExerciseToSchedule, UpcomingSessionModal, calendarEventModal, } = useMainContext()
 
 
     const [isAddingWorkout, setIsAddingWorkout] = useState(false)
@@ -35,6 +35,8 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
         setModalShow(true)
         setExerciseToEdit(exercise)
     }
+
+    
 
     return (
         <>
@@ -93,11 +95,12 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
                             <div className='d-flex flex-wrap gap-1 Add-Routine-List'>
                                 {Exercises.map((workout, index) => {
 
-                                    const exists = schedule.routine.exercises.find(r => r.id === workout.id)
-
-
+                                    const exists = schedule.exercises.find(r => r.id === workout.id)
                                     return (
-                                        <button key={index} className={`border-0 d-flex align-items-center ${exists ? 'tag-routine-active' : 'tag-routine-passive'} desktop-xtra-small regular`} onClick={() => updateScheduledRoutine(schedule.id, workout)}>
+                                        <button key={index} className={
+                                            `border-0 d-flex align-items-center ${exists ? 'tag-routine-active' : 'tag-routine-passive'} desktop-xtra-small regular`} 
+                                            onClick={() => addExerciseToSchedule(schedule.id, workout.id)}
+                                        >
                                             {workout.name}
                                         </button>
                                     )
@@ -109,7 +112,25 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
 
                 <div className='Exercise-List position-relative d-flex flex-column'>
                     {
-                        schedule.routine.exercises.map((exercise, index) => {
+                        schedule.exercises.map((exercise, index) => {
+
+                            // const [latestLog, setLatestLog] = useState<ExerciseLog | null>(null);
+
+                            // useEffect(() => {
+                            //     const fetchExercise = async () => {
+                            //         try {
+                            //             const ex: Exercise | null = await getExercise(exercise.id);
+                            //             if (ex && ex.log && ex.log.length > 0) {
+                            //                 setLatestLog(ex.log[ex.log.length - 1]); // Set the latest log
+                            //             }
+                            //         } catch (error) {
+                            //             console.error("Error fetching exercise log:", error);
+                            //         }
+                            //     };
+
+                            //     fetchExercise();
+                            // }, [exercise.id]); 
+
                             return (
                                 <div key={index} className='d-flex align-items-start gap-2' >
                                     <button
@@ -134,16 +155,23 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
 
                                             <span className='Exercise-set desktop-small regular color-typography-additional'>{exercise.set}x</span>
 
-                                            <span>
+                                            {/* <span>
                                                 <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <circle cx="2" cy="2" r="2" fill="#696969" />
                                                 </svg>
                                             </span>
-                                            <div className='Exercise-stat-wrapper d-flex gap-1'>
-                                                {
-                                                    exercise.rep.map((r, i) => (<span key={i} className='Exercise-stat desktop-small regular color-grey-2'>{r.rep};</span>))
-                                                }
-                                            </div>
+                                            {latestLog && latestLog.set && latestLog.set.length > 0 && (
+                                                <div className="Exercise-stat-wrapper d-flex gap-1">
+                                                    {latestLog.set.map((s, i) => (
+                                                        <span
+                                                            key={i}
+                                                            className="Exercise-stat desktop-small regular color-grey-2"
+                                                        >
+                                                            {s};
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )} */}
                                         </div>
                                     }
                                 </div>

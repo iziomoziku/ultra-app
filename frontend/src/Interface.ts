@@ -2,6 +2,9 @@ export interface Schedule {
     id: string
     complete: boolean
     routine: Routine
+    order: number
+    exercises: Exercise[]
+    note: string
 }
 
 export interface Plan {
@@ -23,6 +26,7 @@ export interface Exercise {
     id: string
     name: string
     complete: boolean
+    type: 'Exercise'
     set: number
     rep: Rep[]
     log: ExerciseLog[]
@@ -37,6 +41,7 @@ export interface ExerciseLog {
     id: string
     set: string[]
     note: string
+    date: Date
 }
 
 export interface Event {
@@ -56,18 +61,24 @@ export interface mainContextType {
     setPlans: React.Dispatch<React.SetStateAction<Plan[]>>
     Exercises: Exercise[]
     setExercises: React.Dispatch<React.SetStateAction<Exercise[]>>
-    updatedSchedule: (routine: Routine) => void
-    updateScheduledRoutine: (routineID: string, exercise: Exercise) => void
+    // updatedSchedule: (routine: Routine) => void
+    // updateScheduledRoutine: (routineID: string, exercise: Exercise) => void
+    addExerciseToRoutine: (routineID: string, exerciseID: string) => void
+    addExerciseToSchedule: (scheduleID: string, exerciseID: string) => void
+    createSchedule: (scheduleID: string) => void
     addExerciseSet: (itemID: string, exerciseID: string) => void
     deleteExerciseSet: (exerciseID: string, setID: string) => void
-    addRoutineToSchedule: (routine: Routine) => void
+    // addRoutineToSchedule: (routine: Routine) => void
     removeRoutineFromSchedule: (itemID: string) => void
     markExerciseAsComplete: (itemID: string, exerciseID: string, log: ExerciseLog) => void
     completeRoutine: (item: Schedule) => void
+    updateScheduleOrder: (updatedSchedules: Schedule[]) => void
+    getExercise: (id: string) => Promise<Exercise | null>
     UpcomingSessionModal: boolean,
     setUpcomingSessionModal: React.Dispatch<React.SetStateAction<boolean>>
     Events: Event[]
     setEvents: React.Dispatch<React.SetStateAction<Event[]>>
     calendarEventModal: boolean
-    setCalendarEventModal: React.Dispatch<React.SetStateAction<boolean>>
+    setCalendarEventModal: React.Dispatch<React.SetStateAction<boolean>>,
+
 }

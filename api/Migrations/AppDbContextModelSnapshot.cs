@@ -43,6 +43,27 @@ namespace Api.Migrations
                     b.ToTable("RoutineExercises", (string)null);
                 });
 
+            modelBuilder.Entity("ExerciseSchedule", b =>
+                {
+                    b.Property<string>("ExercisesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ExercisesUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SchedulesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SchedulesUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ExercisesId", "ExercisesUserId", "SchedulesId", "SchedulesUserId");
+
+                    b.HasIndex("SchedulesId", "SchedulesUserId");
+
+                    b.ToTable("ScheduleExercises", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -291,7 +312,8 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Set")
+                    b.PrimitiveCollection<string>("Set")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -356,6 +378,12 @@ namespace Api.Migrations
                     b.Property<bool>("Complete")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
                     b.Property<string>("RoutineId")
                         .HasColumnType("nvarchar(450)");
 
@@ -372,9 +400,7 @@ namespace Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("RoutineId", "RoutineUserId")
-                        .IsUnique()
-                        .HasFilter("[RoutineId] IS NOT NULL AND [RoutineUserId] IS NOT NULL");
+                    b.HasIndex("RoutineId", "RoutineUserId");
 
                     b.HasIndex("RoutineId1", "RoutineUserId1")
                         .IsUnique()
@@ -394,6 +420,21 @@ namespace Api.Migrations
                     b.HasOne("api.Models.Routine", null)
                         .WithMany()
                         .HasForeignKey("RoutinesId", "RoutinesUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ExerciseSchedule", b =>
+                {
+                    b.HasOne("api.Models.Exercise", null)
+                        .WithMany()
+                        .HasForeignKey("ExercisesId", "ExercisesUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Schedule", null)
+                        .WithMany()
+                        .HasForeignKey("SchedulesId", "SchedulesUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -496,8 +537,8 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.HasOne("api.Models.Routine", "Routine")
-                        .WithOne()
-                        .HasForeignKey("api.Models.Schedule", "RoutineId", "RoutineUserId")
+                        .WithMany()
+                        .HasForeignKey("RoutineId", "RoutineUserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("api.Models.Routine", null)

@@ -7,6 +7,7 @@ import Planner from "/Icons/Planner/planner.svg";
 import Library from "/Icons/Library/library.svg";
 import Progress from "/Icons/Progress/progress.svg";
 import { Link } from 'react-router-dom';
+import { useAuth } from "../../Context/AuthContext";
 
 
 // import "react-pro-sidebar/dist/css/styles.css";
@@ -15,6 +16,9 @@ import { Link } from 'react-router-dom';
 // type Props = {}
 
 const MySidebar = () => {
+
+    const { logout } = useAuth()
+
     return (
         <Sidebar>
             <Menu>
@@ -74,7 +78,11 @@ const MySidebar = () => {
                                 <h5 className="desktop-xtra-small medium text-white">Library</h5>
                             </div>
                         </Link>
-
+                    </MenuItem>
+                    <MenuItem>
+                    <button onClick={logout}>
+                            <h5 className="desktop-xtra-small medium text-white">Log Out</h5>
+                    </button>
                     </MenuItem>
                 </div>
 

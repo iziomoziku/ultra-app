@@ -23,8 +23,14 @@ namespace api.Models
         // Many to manuy relationship with routines
         [JsonIgnore] // Prevents serialization loop
         public List<Routine>? Routines { get; set; } = new();
+        
+        [JsonIgnore] // Prevents serialization loop
+        public List<Schedule>? Schedules { get; set; }
 
+        [JsonIgnore] // Prevents serialization loop
         public string? UserId { get; set; } // Foreign key to IdentityUser
+
+        [JsonIgnore] // Prevents serialization loop
         public IdentityUser? User { get; set; } // Navigation property
 
     }
@@ -39,15 +45,19 @@ namespace api.Models
     {
         public required string Id {get; set;}
 
-        public string? Set {get; set;}
-        
-        public List<string?> Rep {get; set;} = new();
+        public List<string?> Set {get; set;}
         
         public string? Note {get; set;}
 
-        public required DateTime Date { get; set; } // Represents the date of the log
+        public DateTime Date { get; set; }  // Represents the date of the log
+
+        [JsonIgnore]
+        public List<string?> Rep {get; set;} = new();
+        
+
 
         // Foreign Key to Exercise
+        [JsonIgnore]
         public string? ExerciseId { get; set; }
         
         [JsonIgnore]

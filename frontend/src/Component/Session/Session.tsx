@@ -6,6 +6,7 @@ import Close from '/Icons/close.svg'
 import EditSessionModal from '../MyModal/EditSessionModal'
 import UpcomingSession from '../Session/UpcomingSession';
 import { useMainContext } from '../../Context/mainContext'
+import { useEffect } from 'react'
 
 
 
@@ -13,8 +14,11 @@ import { useMainContext } from '../../Context/mainContext'
 type Props = {}
 
 const Session = ({ }: Props) => {
-    // const [modalShow, setModalShow] = useState(false);
     const { schedule, UpcomingSessionModal, setUpcomingSessionModal, completeRoutine } = useMainContext()
+
+    useEffect((() => {
+
+    }), [])
 
     return (
         <div className='d-flex flex-column align-items-start ultra-card session'>

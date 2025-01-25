@@ -1,5 +1,5 @@
 // import React from 'react'
-import Button from 'react-bootstrap/Button';
+// import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import './MyModal.css'
 import Plus from '/Icons/plus.svg'
@@ -48,13 +48,6 @@ const SortableSession = ({ id, schedule, list, editMode }: any) => {
     );
 };
 
-// interface MyEvent {
-//     title: string;
-//     start: Date;
-//     end: Date;
-// }
-
-
 type Props = {
     show: boolean
     onHide: () => void
@@ -67,7 +60,7 @@ type Props = {
 
 
 const EditSession = ({ show, onHide, modalType, event }: Props) => {
-    const { schedule, Routine, addRoutineToSchedule, setSchedule } = useMainContext()
+    const { schedule, Routine, setSchedule, updateScheduleOrder, createSchedule } = useMainContext()
     const [isAddingRoutine, setIsAddingRoutine] = useState(false)
 
     // Sensors for drag-and-drop interactions
@@ -83,8 +76,16 @@ const EditSession = ({ show, onHide, modalType, event }: Props) => {
             const newIndex = schedule.findIndex((item) => item.id === over.id);
             const reorderedSchedule = arrayMove(schedule, oldIndex, newIndex);
             setSchedule(reorderedSchedule);
+            updateScheduleOrder(reorderedSchedule);
         }
     };
+
+    // const handleOnSave = () => {
+        
+    //     // update the scheduled order
+    //     updateScheduleOrder(schedule);
+    //     onHide()
+    // }
 
     return (
         <Modal
@@ -159,7 +160,12 @@ const EditSession = ({ show, onHide, modalType, event }: Props) => {
                                     {Routine.map((routine, index) => {
 
                                         // const isInSession = schedule.find(r => r.id === routine.id)
-                                        return (<button key={index} className={`border-0 tag-routine-passive d-flex align-items-center desktop-xtra-small regular`} onClick={() => addRoutineToSchedule(routine)} >
+                                        // onClick={() => addRoutineToSchedule(routine)}
+                                        return (<button 
+                                            key={index} 
+                                            className={`border-0 tag-routine-passive d-flex align-items-center desktop-xtra-small regular`}
+                                            onClick={() => createSchedule(routine.id)}
+                                        >
                                             {routine.name}
                                         </button>)
                                     })}
@@ -175,15 +181,15 @@ const EditSession = ({ show, onHide, modalType, event }: Props) => {
             {/* <div className=''>
                 <textarea className='w-100 bg-grey-3 border-0' rows={2} placeholder="Leave notes here |" name="note" id="note"></textarea>
             </div> */}
-            {
+            {/* {
                 !event &&
                 (
                     <Modal.Footer className='border-0 d-flex m-0 p-0'>
                         <Button className='flex-1 button-default  desktop-medium medium'>Discard</Button>
-                        <Button className='flex-1 button-varriant-2 desktop-medium medium' onClick={onHide}>Save</Button>
+                        <Button className='flex-1 button-varriant-2 desktop-medium medium' onClick={handleOnSave}>Save</Button>
                     </Modal.Footer>
                 )
-            }
+            } */}
 
         </Modal >
     )

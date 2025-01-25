@@ -9,14 +9,26 @@ namespace api.Models
 
         public bool Complete {get; set;}
 
-        // Composite foreign key to Routine
-        public string? RoutineId { get; set; }
-        public string? RoutineUserId { get; set; } // This matches the UserId part of the composite key in Routine
+        public int Order { get; set; } 
 
-        [JsonIgnore] // Prevent circular reference
+        // Many to Many relationship
+        public List<Exercise>? Exercises { get; set; } = new();
+
+        public string? Note {get; set;}
+
         public Routine? Routine { get; set; } // Navigation property
 
+        // Composite foreign key to Routine
+        [JsonIgnore] // Prevent circular reference
+        public string? RoutineId { get; set; }
+        
+        [JsonIgnore] // Prevent circular reference
+        public string? RoutineUserId { get; set; } // This matches the UserId part of the composite key in Routine
+
+        [JsonIgnore] // Prevent circular reference 
         public string? UserId { get; set; } // Foreign key to IdentityUser
+
+        [JsonIgnore] // Prevent circular reference
         public IdentityUser? User { get; set; } // Navigation property
     }
 }

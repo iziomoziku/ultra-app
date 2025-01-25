@@ -1,58 +1,281 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { Exercise, ExerciseLog, mainContextType, Routine, Schedule, Event, Plan } from "../Interface";
-import { currentExercises, currentPlans, currentRoutines, MyEvents, UpcommingSession } from "../data";
+import { currentExercises, currentPlans, MyEvents, } from "../data";
 import { v4 as uuidv4 } from 'uuid';
+import axios from "axios";
+// import { useAuth } from "./AuthContext";
+// import { checkDomainOfScale } from "recharts/types/util/ChartUtils";
 
 const mainContext = createContext<mainContextType | undefined>(undefined)
 
 export const MainProvider = ({ children }: { children: ReactNode }) => {
+    // const { token } = useAuth()
+
+    const [schedule, setSchedule] = useState<Schedule[]>([])
+
+
+    useEffect(() => {
+        const fetchSchedules = async () => {
+            const schedules = await getAllSchedules(); // Fetch the schedules
+            const routines = await getAllRoutines()
+            const exercise = await getAllExercises()
+            // console.log(schedules)
+            setSchedule(schedules); // Update the state with the fetched data
+            setRoutine(routines)
+            setExercises(exercise)
+        };
+    
+        fetchSchedules(); // Call the async function
+    }, []);
+
 
     // your upcoming schedules
-    const [schedule, setSchedule] = useState<Schedule[]>(UpcommingSession)
     const [, setCompletedRoutine] = useState<Schedule[]>([])
     const [Exercises, setExercises] = useState<Exercise[]>(currentExercises)
-    const [Routine, setRoutine] = useState<Routine[]>(currentRoutines)
+    const [Routine, setRoutine] = useState<Routine[]>([])
     const [Plans, setPlans] = useState<Plan[]>(currentPlans)
     const [UpcomingSessionModal, setUpcomingSessionModal] = useState(false);
     const [calendarEventModal, setCalendarEventModal] = useState(false);
     const [Events, setEvents] = useState<Event[]>(MyEvents)
 
+
+
+    /**
+     * Get all schedules
+     * @returns 
+     */
+    const getAllSchedules = async (): Promise<Schedule[]> => {
+        try {
+            const response = await axios.get<Schedule[]>(`${import.meta.env.VITE_BACKEND_API_URL}/schedule`);
+            const data = response.data;
+
+            // Transform data to fit the frontend structure
+            const transformedSchedules: Schedule[] = data.map((item: any) => ({
+                id: item.id,
+                complete: item.complete,
+                routine: item.routine,
+                order: item.order,
+                exercises: item.exercises,
+                note: item.Note
+            }));
+
+            return transformedSchedules;
+        } catch (error) {
+            console.error("Error fetching schedules:", error);
+            return [];
+        }
+    }
+
+    /**
+     * Reorder schedules
+     * @param updatedSchedules 
+     */
+    const updateScheduleOrder = async (updatedSchedules: Schedule[]) => {
+        try {
+            const response = await axios.post<Schedule[]>(
+                `${import.meta.env.VITE_BACKEND_API_URL}/schedule/reorder`,
+                updatedSchedules
+            );
+            const data = response.data;
+
+            const updatedSchedule: Schedule[] = data.map((item: any) => ({
+                id: item.id,
+                complete: item.complete,
+                routine: item.routine,
+                order: item.order,
+                exercises: item.Exercise,
+                note: item.Note
+            }));
+
+            setSchedule(updatedSchedule)
+        } catch (error) {
+            console.error("Failed to update schedule order:", error);
+        }
+    };
+
+    const createSchedule = async (routineID: string) => {
+        try {
+            
+            const newSchedule = {
+                id: uuidv4(),
+                complete: false,
+                order: schedule.length,
+            }
+            
+            const response = await axios.post<Schedule[]>(
+                `${import.meta.env.VITE_BACKEND_API_URL}/schedule?routineID=${routineID}`,
+                newSchedule
+            );
+            const data = response.data;
+
+            const updatedSchedule: Schedule[] = data.map((item: any) => ({
+                id: item.id,
+                complete: item.complete,
+                routine: item.routine,
+                order: item.order,
+                exercises: item.Exercise,
+                note: item.Note
+            }));
+
+            setSchedule(updatedSchedule)
+        } catch (error) {
+            console.error("Failed to update schedule order:", error);
+        }
+    }
+    
+
+    /**
+     * Get all routines
+     * @returns 
+     */
+    const getAllRoutines = async (): Promise<Routine[]> => {
+        try {
+            const response = await axios.get<Routine[]>(`${import.meta.env.VITE_BACKEND_API_URL}/routine`);
+            const data = response.data;
+
+    
+            // Transform data to fit the frontend structure
+            const transformedSchedules: Routine[] = data.map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                exercises: item.exercises,
+                type: 'Routine'
+            }));
+
+            return transformedSchedules;
+        } catch (error) {
+            console.error("Error fetching routines:", error);
+            return [];
+        }
+    }
+
+    /**
+     * Get all routines
+     * @returns 
+     */
+    const getAllExercises = async (): Promise<Exercise[]> => {
+        try {
+            const response = await axios.get<Exercise[]>(`${import.meta.env.VITE_BACKEND_API_URL}/exercise`);
+            const data = response.data;
+
+    
+            // Transform data to fit the frontend structure
+            const transformedSchedules: Exercise[] = data.map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                complete: item.complete,
+                type: 'Exercise',
+                set: item.set,
+                rep: [],
+                log: item.Log
+            }));
+
+
+
+            return transformedSchedules;
+        } catch (error) {
+            console.error("Error fetching exercises:", error);
+            return [];
+        }
+    }
+
+
+    /**
+     * add exercise to routine
+     * @param routineID id of the routine
+     * @param exerciseID id of the exercise
+     */
+    const addExerciseToRoutine = async (routineID: string, exerciseID: string) => {
+        try {
+            await axios.post(
+                `${import.meta.env.VITE_BACKEND_API_URL}/routine/${routineID}/add-exercise`,
+                {
+                    "exerciseID": exerciseID
+                }
+            );
+            const response = await getAllSchedules()
+
+            setSchedule(response)
+        } catch (error) {
+            console.error("Failed to add exercise to routine:", error);
+        }
+    }
+
+    /**
+     * add exercise to routine
+     * @param scheduleID id of the routine
+     * @param exerciseID id of the exercise
+     */
+    const addExerciseToSchedule = async (scheduleID: string, exerciseID: string) => {
+        try {
+            await axios.post(
+                `${import.meta.env.VITE_BACKEND_API_URL}/schedule/${scheduleID}/update-exercise`,
+                {
+                    "exerciseID": exerciseID
+                }
+            );
+            const response = await getAllSchedules()
+
+            setSchedule(response)
+        } catch (error) {
+            console.error("Failed to add exercise to schedule:", error);
+        }
+    }
+
+    /**
+     * Get Exercise by ID
+     * @param id 
+     * @returns 
+     */
+    const getExercise = async (id: string): Promise<Exercise | null> => {
+        try {
+            const response = await axios.get<Exercise>(`${import.meta.env.VITE_BACKEND_API_URL}/exercise/${id}`);
+            return response.data;    
+        } catch (error) {
+            console.error("Error fetching schedules:", error);
+            return null;
+        }
+    }
+
+
     /**
      * Add or remove a routine from the schedule.
      * @param routine The routine to add or remove.
      */
-    const updatedSchedule = (routine: Routine) => {
-        const exists = schedule.some(s => s.routine.id === routine.id);
+    // const updatedSchedule = (routine: Routine) => {
+    //     const exists = schedule.some(s => s.routine.id === routine.id);
 
-        if (exists) {
-            // If the routine is already in the schedule, remove it
-            const updatedSchedule = schedule.filter(s => s.routine.id !== routine.id);
-            setSchedule(updatedSchedule);
-        } else {
-            // If the routine is not in the schedule, add it
-            const newScheduleItem = {
-                id: uuidv4(), // Generate a unique ID for the schedule item
-                complete: false, // Default to incomplete
-                routine: routine // Add the routine
-            };
-            setSchedule([...schedule, newScheduleItem]);
-        }
-    };
+    //     if (exists) {
+    //         // If the routine is already in the schedule, remove it
+    //         const updatedSchedule = schedule.filter(s => s.routine.id !== routine.id);
+    //         setSchedule(updatedSchedule);
+    //     } else {
+    //         // If the routine is not in the schedule, add it
+    //         const newScheduleItem = {
+    //             id: uuidv4(), // Generate a unique ID for the schedule item
+    //             complete: false, // Default to incomplete
+    //             routine: routine, // Add the routine
+    //             order: schedule.length + 1
+    //         };
+    //         setSchedule([...schedule, newScheduleItem]);
+    //     }
+    // };
 
 
     /**
      * Add a routine to the schedule list.
      * @param routine The routine to add.
      */
-    const addRoutineToSchedule = (routine: Routine) => {
-        const newScheduleItem = {
-            id: uuidv4(), // Generate a unique ID for the schedule item
-            complete: false, // Default completion status
-            routine: routine // The routine to add
-        };
+    // const addRoutineToSchedule = (routine: Routine) => {
+    //     const newScheduleItem = {
+    //         id: uuidv4(), // Generate a unique ID for the schedule item
+    //         complete: false, // Default completion status
+    //         routine: routine, // The routine to add
+    //         order: schedule.length + 1
+    //     };
 
-        setSchedule([...schedule, newScheduleItem]); // Add the new item
-    };
+    //     setSchedule([...schedule, newScheduleItem]); // Add the new item
+    // };
 
     /**
      * Remove a routine from the schedule list.
@@ -71,31 +294,31 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
      * @param itemID The ID of the schedule item to update.
      * @param exercise The exercise to add or remove.
      */
-    const updateScheduledRoutine = (itemID: string, exercise: Exercise) => {
-        const updatedSchedule = schedule.map(scheduleItem => {
-            // Check if the routine ID matches
-            if (scheduleItem.id === itemID) {
-                const exists = scheduleItem.routine.exercises.some(e => e.id === exercise.id);
+    // const updateScheduledRoutine = (itemID: string, exerciseID: string) => {
+    //     const updatedSchedule = schedule.map(scheduleItem => {
+    //         // Check if the routine ID matches
+    //         if (scheduleItem.id === itemID) {
+    //             const exists = scheduleItem.routine.exercises.some(e => e.id === exercise.id);
 
-                // Toggle the exercise: add if it doesn't exist, remove if it does
-                const updatedExercises = exists
-                    ? scheduleItem.routine.exercises.filter(e => e.id !== exercise.id) // Remove the exercise
-                    : [...scheduleItem.routine.exercises, exercise]; // Add the exercise
+    //             // Toggle the exercise: add if it doesn't exist, remove if it does
+    //             const updatedExercises = exists
+    //                 ? scheduleItem.routine.exercises.filter(e => e.id !== exercise.id) // Remove the exercise
+    //                 : [...scheduleItem.routine.exercises, exercise]; // Add the exercise
 
-                // Return the updated schedule item with modified routine
-                return {
-                    ...scheduleItem,
-                    routine: {
-                        ...scheduleItem.routine,
-                        exercises: updatedExercises
-                    }
-                };
-            }
-            return scheduleItem; // No changes for other schedule items
-        });
+    //             // Return the updated schedule item with modified routine
+    //             return {
+    //                 ...scheduleItem,
+    //                 routine: {
+    //                     ...scheduleItem.routine,
+    //                     exercises: updatedExercises
+    //                 }
+    //             };
+    //         }
+    //         return scheduleItem; // No changes for other schedule items
+    //     });
 
-        setSchedule(updatedSchedule); // Update the schedule state
-    };
+    //     setSchedule(updatedSchedule); // Update the schedule state
+    // };
 
     /**
      * Add a new set to the exercise in the schedule.
@@ -244,12 +467,15 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         <mainContext.Provider value={{
             schedule, setSchedule,
             Routine, setRoutine,
-            updatedSchedule,
+            // updatedSchedule,
             Exercises, setExercises,
-            updateScheduledRoutine,
+            // updateScheduledRoutine,
+            addExerciseToRoutine,
+            addExerciseToSchedule,
+            createSchedule,
             addExerciseSet,
             deleteExerciseSet,
-            addRoutineToSchedule,
+            // addRoutineToSchedule,
             removeRoutineFromSchedule,
             markExerciseAsComplete,
             UpcomingSessionModal,
@@ -260,7 +486,9 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
             calendarEventModal,
             setCalendarEventModal,
             Plans,
-            setPlans
+            setPlans,
+            getExercise,
+            updateScheduleOrder
         }}>
             {children}
         </mainContext.Provider>
@@ -276,3 +504,26 @@ export const useMainContext = () => {
     }
     return context;
 }
+
+// (function() {
+//     // Wait for the DOM to fully load
+//     document.addEventListener('DOMContentLoaded', () => {
+//         const checkForButton = () => {
+//             // Replace BUTTON_SELECTOR with the actual selector of the "Skip Intro" button
+//             const skipButton = document.querySelector('button.skip__button.body_copy');
+//             if (skipButton) {
+//                 skipButton.click();
+//                 console.log('Intro skipped!');
+//             }
+//         };
+
+//         // Observe changes in the DOM to handle dynamic loading of the button
+//         const observer = new MutationObserver(() => {
+//             checkForButton();
+//         });
+
+//         observer.observe(document.body, { childList: true, subtree: true });
+
+//         console.log('Script initialized and watching for Skip Intro button.');
+//     });
+// })();
