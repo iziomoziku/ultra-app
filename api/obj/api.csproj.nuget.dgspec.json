@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj": {}
+    "/Users/ultra/GitRepos/ultra-app/api/api.csproj": {}
   },
   "projects": {
-    "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj": {
+    "/Users/ultra/GitRepos/ultra-app/api/api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj",
-        "projectName": "Api",
-        "projectPath": "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj",
-        "packagesPath": "/Users/iziomoziku/.nuget/packages/",
-        "outputPath": "/Users/iziomoziku/Documents/Development/UltraApp/Api/obj/",
+        "projectUniqueName": "/Users/ultra/GitRepos/ultra-app/api/api.csproj",
+        "projectName": "api",
+        "projectPath": "/Users/ultra/GitRepos/ultra-app/api/api.csproj",
+        "packagesPath": "/Users/ultra/.nuget/packages/",
+        "outputPath": "/Users/ultra/GitRepos/ultra-app/api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/iziomoziku/.nuget/NuGet/NuGet.Config"
+          "/Users/ultra/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"

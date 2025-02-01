@@ -44,6 +44,7 @@ namespace api.Controllers
 
             // Fetch the routine
             var routine = await _context.Routines
+                                        .Include(r => r.Exercises )
                                         .FirstOrDefaultAsync(r => r.Id == routineID && r.UserId == userId);
 
             if (routine == null)
@@ -212,7 +213,7 @@ namespace api.Controllers
 
 
 
-        public class AddExerciseRequest
+        public class AddExerciseRequests
         {
             public string? ExerciseID { get; set; }
         }
@@ -229,7 +230,7 @@ namespace api.Controllers
 
         [HttpPost("{scheduleID}/update-exercise")]
         [Authorize]
-        public async Task<IActionResult> AddExercise(string scheduleID, [FromBody] AddExerciseRequest request)
+        public async Task<IActionResult> AddExercises(string scheduleID, [FromBody] AddExerciseRequests request)
         {
             if (string.IsNullOrEmpty(request.ExerciseID))
                 return BadRequest("Exercise ID is required.");
