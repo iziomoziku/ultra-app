@@ -193,7 +193,7 @@ namespace api.Controllers
             if (userId == null)
                 return Unauthorized("UserId not found in token.");
 
-            int index = 0;
+            int index = 1;
             foreach (var schedule in reorderedSchedules)
             {
 
