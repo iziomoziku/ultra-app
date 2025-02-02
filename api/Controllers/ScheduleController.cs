@@ -12,10 +12,12 @@ namespace api.Controllers
     public class ScheduleController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IUserValidationService _userValidationService;
 
-        public ScheduleController(AppDbContext context)
+        public ScheduleController(AppDbContext context, IUserValidationService userValidationService)
         {
             _context = context;
+            _userValidationService = userValidationService;
         }
 
         /*******
@@ -290,6 +292,21 @@ namespace api.Controllers
             return Ok( new { Message = $"Exercise '{exercise.Name}' added to schedule '{existingSchedule.Routine.Name}' successfully." });
         }
         
+
+        [Authorize]
+        [HttpGet("/delete")]
+
+        public async Task<IActionResult> DeleteSchedule(string id)
+        {
+            var (user, errorResult) = await _userValidationService.ValidateUserAsync(User);
+            if (errorResult != null)
+            {
+                return errorResult;
+            }
+
+            return Ok(new { Message = "Schedule deleted successfully." });
+
+        }
 
     }
 }
