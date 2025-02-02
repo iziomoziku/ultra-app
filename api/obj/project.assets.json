@@ -5098,19 +5098,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/ultra/.nuget/packages/": {}
+    "/Users/iziomoziku/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/ultra/GitRepos/ultra-app/api/Api.csproj",
+      "projectUniqueName": "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj",
       "projectName": "Api",
-      "projectPath": "/Users/ultra/GitRepos/ultra-app/api/Api.csproj",
-      "packagesPath": "/Users/ultra/.nuget/packages/",
-      "outputPath": "/Users/ultra/GitRepos/ultra-app/api/obj/",
+      "projectPath": "/Users/iziomoziku/Documents/Development/UltraApp/Api/Api.csproj",
+      "packagesPath": "/Users/iziomoziku/.nuget/packages/",
+      "outputPath": "/Users/iziomoziku/Documents/Development/UltraApp/Api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/ultra/.nuget/NuGet/NuGet.Config"
+        "/Users/iziomoziku/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"

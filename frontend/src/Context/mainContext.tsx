@@ -155,7 +155,25 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         }/schedule/delete?id=${scheduleID}`
       );
 
-      console.log(response.data);
+      const data = response.data;
+
+      const updatedSchedule: Schedule[] = data
+        .filter(
+          (item: any) =>
+            item.exercises &&
+            Array.isArray(item.exercises) &&
+            item.exercises.length > 0
+        )
+        .map((item: any) => ({
+          id: item.id,
+          complete: item.complete,
+          routine: item.routine,
+          order: item.order,
+          exercises: item.exercises, // Ensure this is the correct property
+          note: item.note,
+        }));
+
+      setSchedule(updatedSchedule);
     } catch (error) {
       console.log(error);
     }

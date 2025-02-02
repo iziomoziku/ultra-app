@@ -21,13 +21,15 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 
 builder.WebHost.ConfigureKestrel(serverOptions => {
-    serverOptions.ListenAnyIP(8081); // Change to another port like 5000
+    // serverOptions.ListenAnyIP(8081);
+    serverOptions.ListenLocalhost(8081);
 });
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(); // This registers authorization services
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<IUserValidationService, UserValidationService>();
 
 // Authentication for JWT
 builder.Services.AddAuthentication(options =>
@@ -78,7 +80,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 app.UseCors("AllowAll");
@@ -94,6 +97,8 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers(); // Map controllers
 });
+
+
 
 
 // app.UseHttpsRedirection();

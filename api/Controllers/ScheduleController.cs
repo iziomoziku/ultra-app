@@ -14,6 +14,27 @@ namespace api.Controllers
         private readonly AppDbContext _context;
         private readonly IUserValidationService _userValidationService;
 
+        private async Task<(Schedule schedule, IActionResult errorResult)> GetScheduleEntityAsync(string id)
+        {
+            // Check if id is provided
+            if (string.IsNullOrEmpty(id)) return (null, BadRequest("Schedule id is required."));
+
+            // validate user
+            var (user, errorResult) = await _userValidationService.ValidateUserAsync(User);
+            if (errorResult != null) return (null, NotFound($"User not found"));
+
+            var schedule = await _context.Schedules
+                .Include(s => s.Routine)
+                .ThenInclude(r => r.Exercises)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == user.Id);
+
+            if (schedule == null) return (null, NotFound($"Schedule with ID '{id}' not found for the current user."));
+
+
+            return (schedule, null);
+        }
+
+
         public ScheduleController(AppDbContext context, IUserValidationService userValidationService)
         {
             _context = context;
@@ -123,27 +144,19 @@ namespace api.Controllers
         Get a specific schedule
         *******/
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> Get(string id)
         {
 
-            if (id == null)
-            {
-                return BadRequest("Schedule id is required.");
-            }
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-            {
-                return Unauthorized("UserId not found");
-            }
-            
-            var schedule = await _context.Schedules
-                                .Include(s => s.Routine)
-                                .ThenInclude(r => r.Exercises)
-                                .Where(e => e.UserId == userId)
-                                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            if (string.IsNullOrEmpty(id)) return (BadRequest("Schedule id is required."));
 
-            if (schedule == null) return NotFound($"Schedule with ID '{id}' not found for the current user.");
+            // Vslidate user
+            var (user, validateErrorResult) = await _userValidationService.ValidateUserAsync(User);
+            if (validateErrorResult != null) return validateErrorResult;
+
+            var (schedule, errorResult) = await GetScheduleEntityAsync(id);
+            if (errorResult != null) return errorResult;
 
             return Ok(schedule);
         }
@@ -152,6 +165,7 @@ namespace api.Controllers
         Get all schedule
         *******/
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
 
@@ -293,18 +307,39 @@ namespace api.Controllers
         }
         
 
-        [Authorize]
-        [HttpGet("/delete")]
 
+        [HttpGet("delete")]
+        [Authorize]
+        // /schedule/delete?id=
         public async Task<IActionResult> DeleteSchedule(string id)
         {
-            var (user, errorResult) = await _userValidationService.ValidateUserAsync(User);
-            if (errorResult != null)
-            {
-                return errorResult;
-            }
+            // check if id is provided
+            if (string.IsNullOrEmpty(id)) return (BadRequest("Schedule id is required."));
 
-            return Ok(new { Message = "Schedule deleted successfully." });
+
+            // validate user
+            var (user, errorResult) = await _userValidationService.ValidateUserAsync(User);
+            if (errorResult != null) return errorResult;
+
+            // Use the helper method to retrieve the schedule entity.
+            var (schedule, getErrorResult) = await GetScheduleEntityAsync(id);
+            if (getErrorResult != null) return getErrorResult;
+
+            // Remove the schedule and save changes.
+            _context.Schedules.Remove(schedule);
+            await _context.SaveChangesAsync();
+
+            var updatedSchedule = await _context.Schedules
+                                    .Include(s => s.Routine)
+                                    .ThenInclude(r => r.Exercises)
+                                    .Include(s => s.Exercises)
+                                    .Where(e => e.UserId == user.Id)
+                                    .OrderBy(s => s.Order)
+                                    .ToListAsync();
+
+            if (updatedSchedule == null || updatedSchedule.Count == 0) return NotFound("No schedules found");
+
+            return Ok(updatedSchedule);
 
         }
 
