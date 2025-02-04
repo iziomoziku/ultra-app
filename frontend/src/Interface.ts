@@ -28,6 +28,7 @@ export interface Exercise {
   complete: boolean;
   type: "Exercise";
   set: number;
+  // not needed, will need to remove
   rep: Rep[];
   log: ExerciseLog[];
 }

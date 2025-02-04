@@ -33,8 +33,13 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
       const routines = await getAllRoutines();
       const exercise = await getAllExercises();
       // console.log(schedules)
+      console.log("schedules to be saved in state", schedules);
       setSchedule(schedules); // Update the state with the fetched data
+
+      console.log("routines to be saved in state", routines);
       setRoutine(routines);
+
+      console.log("exercise to be saved in state", exercise);
       setExercises(exercise);
     };
 
@@ -147,6 +152,10 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  /**
+   * Delete a schedule
+   * @param scheduleID
+   */
   const deleteSchedule = async (scheduleID: string) => {
     try {
       const response = await axios.get<Schedule[]>(
@@ -216,6 +225,8 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
       );
       const data = response.data;
 
+      // console.log("all exercises:", data);
+
       // Transform data to fit the frontend structure
       const transformedSchedules: Exercise[] = data.map((item: any) => ({
         id: item.id,
@@ -224,8 +235,10 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         type: "Exercise",
         set: item.set,
         rep: [],
-        log: item.Log,
+        log: item.log,
       }));
+
+      // console.log("exercises:", data);
 
       return transformedSchedules;
     } catch (error) {

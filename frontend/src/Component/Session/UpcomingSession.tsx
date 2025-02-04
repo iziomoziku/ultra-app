@@ -35,6 +35,8 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
     currentExercises[0]
   );
 
+  console.log("schedule", schedule);
+
   const handleEditWorkout = (exercise: Exercise) => {
     setModalShow(true);
     setExerciseToEdit(exercise);
