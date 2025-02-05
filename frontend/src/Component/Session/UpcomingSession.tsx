@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import Plus from "/Icons/plus.svg";
 import Trash from "/Icons/trash.svg";
-import { currentExercises } from "../../data";
+// import { currentExercises } from "../../data";
 import { Exercise, Schedule } from "../../Interface";
 import EditWorkoutModal from "../MyModal/EditWorkoutModal";
 import { useMainContext } from "../../Context/mainContext";

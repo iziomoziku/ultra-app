@@ -4,9 +4,9 @@ import { Exercise, ExerciseLog, Schedule } from "../../Interface";
 import Plus from "/Icons/plus.svg";
 import Trash from "/Icons/trash.svg";
 import IncreaseArrow from "/Icons/increaseArrow.svg";
-import { useMainContext } from "../../Context/mainContext";
+// import { useMainContext } from "../../Context/mainContext";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   show: boolean;
@@ -28,9 +28,9 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
       : null;
   });
 
-  console.log("called again");
-  console.log(exercise);
-
+  /**
+   * stores/updates the sets
+   */
   const [exerciseSets, updateExerciseSets] = useState<Set[]>(() => {
     if (!lastLoggedExercise) {
       return [
@@ -53,10 +53,16 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
     });
   });
 
+  /**
+   * stores and update the note
+   */
   const [exerciseNote, updateExerciseNote] = useState(
     lastLoggedExercise ? lastLoggedExercise.note : ""
   );
 
+  /**
+   * update the sets when exercise is reloaded
+   */
   useEffect(() => {
     updateExerciseSets(() => {
       if (!lastLoggedExercise) {
@@ -81,32 +87,12 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
     });
   }, [exercise]);
 
-  // useEffect(() => {
-  //   // Find the routine and exercise from the schedule
-  //   const foundScheduleItem = schedule.find((s) => s.id === scheduleItem.id);
-  //   const foundExercise = foundScheduleItem?.routine.exercises.find(
-  //     (e) => e.id === exercise.id
-  //   );
-
-  //   if (foundExercise) {
-  //     // Map the updated exercise's rep array to maintain the correct format
-  //     const updatedSets = foundExercise.rep.map((r) => {
-  //       const [rep, weight] = r.rep.split("x");
-  //       return {
-  //         id: r.id,
-  //         rep: rep || "0", // Default to "0" if rep is missing
-  //         weight: weight || "0", // Default to "0" if weight is missing
-  //       };
-  //     });
-
-  //     // Update the exerciseSets state
-  //     updateExerciseSets(updatedSets);
-
-  //     // Update the updatedExercise state
-  //     setUpdatedExercise(foundExercise);
-  //   }
-  // }, [schedule, scheduleItem.routine.id, exercise.id]); // Dependencies for re-execution
-
+  /**
+   * update the exerciseSet when you update the set
+   * @param id
+   * @param field
+   * @param value
+   */
   const handleSetChange = (
     id: Number,
     field: "rep" | "weight",
@@ -119,6 +105,11 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
     updateExerciseSets(update);
   };
 
+  /**
+   * Delete a set
+   * @param id
+   * @returns
+   */
   const deleteSet = (id: Number) => {
     if (!exerciseSets) return;
 
@@ -126,6 +117,19 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
     updateExerciseSets(update);
   };
 
+  const addSet = () => {
+    const newSet = {
+      id: exerciseSets.length + 1,
+      rep: "0",
+      weight: "0",
+    };
+
+    updateExerciseSets([...exerciseSets, newSet]);
+  };
+
+  /**
+   * update the exercise to the DB
+   */
   const updateExercise = () => {
     // const exerciseLog: ExerciseLog = {
     //   id: uuidv4(),
@@ -197,9 +201,7 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
                 </div>
                 <button
                   className="border-0 bg-transparent p-0"
-                  // onClick={() =>
-                  //   addExerciseSet(scheduleItem.id, updatedExercise.id)
-                  // }
+                  onClick={() => addSet()}
                 >
                   <img src={Plus} alt="icon" className="" />
                 </button>
