@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace api.Controllers
 {
@@ -14,6 +16,10 @@ namespace api.Controllers
         private readonly AppDbContext _context;
         private readonly IUserValidationService _userValidationService;
 
+
+        /***
+        Fuction to get a schedule
+        ***/
         private async Task<(Schedule schedule, IActionResult errorResult)> GetScheduleEntityAsync(string id)
         {
             // Check if id is provided
@@ -32,6 +38,32 @@ namespace api.Controllers
 
 
             return (schedule, null);
+        }
+
+
+        /***
+        Get all the schedules for a user
+        ***/
+        private async Task<(List<Schedule>? schedules, IActionResult? errorResult)> GetAllScheduleEntityAsync(IdentityUser user)
+        {
+
+            if (user == null)
+            {
+                return (null, BadRequest("User not found"));
+            }
+
+            var schedules = await _context.Schedules
+                                    .Include(s => s.Routine)
+                                        .ThenInclude(r => r.Exercises)
+                                    .Include(s => s.Exercises)
+                                        .ThenInclude(e => e.Log)
+                                    .Where(s => s.UserId == user.Id && s.Complete == false)
+                                    .OrderBy(s => s.Order)
+                                    .ToListAsync();
+
+            if (schedules == null || schedules.Count == 0) return (null, NotFound("No schedules found"));
+
+            return (schedules, null);
         }
 
 
@@ -96,7 +128,7 @@ namespace api.Controllers
                                     .Include(s => s.Routine)
                                     .ThenInclude(r => r.Exercises)
                                     .Include(s => s.Exercises)
-                                    .Where(e => e.UserId == userId)
+                                    .Where(s => s.UserId == userId && s.Complete == false)
                                     .OrderBy(s => s.Order)
                                     .ToListAsync();
 
@@ -104,7 +136,11 @@ namespace api.Controllers
         }
 
         
+        /**
+        Mark a schedule as completed
+        **/
         [HttpGet("complete/{id}")]
+        [Authorize]
         public async Task<IActionResult> MarkComplete(string id)
         {
 
@@ -114,16 +150,10 @@ namespace api.Controllers
             }
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-            {
-                return Unauthorized("UserId not found");
-            }
+            if (userId == null) return Unauthorized("UserId not found");
 
             var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-            {
-                return BadRequest("User not found in database.");
-            }
+            if (user == null) return BadRequest("User not found in database.");
 
             var schedule = await _context.Schedules
                                 .Include(s => s.Routine)
@@ -131,13 +161,19 @@ namespace api.Controllers
 
             if (schedule == null) return NotFound($"Schedule with ID '{id}' not found for the current user.");
 
+            // mark as complete
             schedule.Complete = true;
-
             // Update the the DB
             _context.Schedules.Update(schedule);
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "Schedule marked as complete successfully." });
+
+            var (updatedSchedule, error) = await GetAllScheduleEntityAsync(user);
+            if (error != null) return error;
+
+            var newUpdateSchedule = await ReorderSchedules(updatedSchedule);
+
+            return Ok(newUpdateSchedule);
         }
 
         /*******
@@ -183,10 +219,10 @@ namespace api.Controllers
             
             var schedule = await _context.Schedules
                                     .Include(s => s.Routine)
-                                    .ThenInclude(r => r.Exercises)
+                                        .ThenInclude(r => r.Exercises)
                                     .Include(s => s.Exercises)
-                                    .ThenInclude(e => e.Log)
-                                    .Where(e => e.UserId == userId)
+                                        .ThenInclude(e => e.Log)
+                                    .Where(s => s.UserId == userId && s.Complete == false)
                                     .OrderBy(s => s.Order)
                                     .ToListAsync();
 
@@ -206,9 +242,15 @@ namespace api.Controllers
             if (reorderedSchedules == null || reorderedSchedules.Count == 0)
                 return BadRequest("Reordered schedules cannot be null or empty.");
 
+            // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // if (userId == null)
+            //     return Unauthorized("UserId not found in token.");
+
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-                return Unauthorized("UserId not found in token.");
+            if (userId == null) return Unauthorized("UserId not found");
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return BadRequest("User not found in database.");
 
             int index = 1;
             foreach (var schedule in reorderedSchedules)
@@ -225,7 +267,11 @@ namespace api.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return Ok(reorderedSchedules);
+
+            var (updatedSchedule, error) = await GetAllScheduleEntityAsync(user);
+            if (error != null) return error;
+
+            return Ok(updatedSchedule);
         }
 
 
@@ -308,7 +354,9 @@ namespace api.Controllers
         }
         
 
-
+        /***
+        Delete a schedule
+        ***/
         [HttpGet("delete")]
         [Authorize]
         // /schedule/delete?id=
@@ -332,9 +380,10 @@ namespace api.Controllers
 
             var updatedSchedule = await _context.Schedules
                                     .Include(s => s.Routine)
-                                    .ThenInclude(r => r.Exercises)
+                                        .ThenInclude(r => r.Exercises)
                                     .Include(s => s.Exercises)
-                                    .Where(e => e.UserId == user.Id)
+                                        .ThenInclude(e => e.Log)
+                                    .Where(s => s.UserId == user.Id && s.Complete == false)
                                     .OrderBy(s => s.Order)
                                     .ToListAsync();
 

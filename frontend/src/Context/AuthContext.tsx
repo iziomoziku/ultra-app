@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   user: { username: string } | null;
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<{ username: string } | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Add loading state
+  const navigate = useNavigate(); // ✅ Initialize navigate
 
   const login = async (username: string, password: string) => {
     try {
@@ -52,6 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     delete axios.defaults.headers.common["Authorization"];
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -69,6 +72,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     setLoading(false); // Set loading to false after checking
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const decodedToken = jwtDecode<{ exp: number }>(token);
+    const expiryTime = decodedToken.exp * 1000;
+    const currentTime = Date.now();
+    const timeUntilExpiry = expiryTime - currentTime;
+
+    const timeout = setTimeout(() => {
+      logout(); // ✅ Auto-logout when token expires
+    }, timeUntilExpiry);
+
+    return () => clearTimeout(timeout); // Cleanup on unmount
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, loading }}>

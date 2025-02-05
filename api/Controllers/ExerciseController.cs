@@ -147,10 +147,10 @@ namespace api.Controllers
 
                 var updatedschedule = await _context.Schedules
                                     .Include(s => s.Routine)
-                                    .ThenInclude(r => r.Exercises)
+                                        .ThenInclude(r => r.Exercises)
                                     .Include(s => s.Exercises)
-                                    .ThenInclude(e => e.Log)
-                                    .Where(e => e.UserId == user.Id)
+                                        .ThenInclude(e => e.Log)
+                                    .Where(s => s.UserId == user.Id && s.Complete == false)
                                     .OrderBy(s => s.Order)
                                     .ToListAsync();
 

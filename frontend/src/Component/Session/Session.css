@@ -1,106 +1,120 @@
 .schedule-top {
-    gap: 12px;
+  gap: 12px;
 }
 
 .session-content {
-    border-radius: 14px;
-    padding: 16px;
-    height: 100%;
-    
+  border-radius: 14px;
+  padding: 16px;
+  height: 100%;
+}
+
+.react-datepicker-popper {
+  width: fit-content;
 }
 
 .Exercise-List::before {
-    content: '';
-    position: absolute;
-width: 2px;
-height: calc(100% - 12px);
-z-index: 1;
-top: 7px;
-left: 0.4px;
-border: none;
-border-right: 1px solid transparent; 
-border-image: linear-gradient(to bottom, var(--typography-additional) 50%, transparent 50%);
-border-image-slice: 10;
-border-image-repeat: round; /* Repeat the dots */
-padding: 12.095px;
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: calc(100% - 12px);
+  z-index: 1;
+  top: 7px;
+  left: 0.4px;
+  border: none;
+  border-right: 1px solid transparent;
+  border-image: linear-gradient(
+    to bottom,
+    var(--typography-additional) 50%,
+    transparent 50%
+  );
+  border-image-slice: 10;
+  border-image-repeat: round; /* Repeat the dots */
+  padding: 12.095px;
 }
 
 .session-list {
-    max-height: 267px;
-    overflow-y: auto;
-    gap: 16px;
+  max-height: 267px;
+  overflow-y: auto;
+  gap: 16px;
 }
 
 .Routine {
-gap: 12px;
+  gap: 12px;
 }
 
-.Exercise, .Exercise-List {
-    padding-left: 20px;
+.Exercise,
+.Exercise-List {
+  padding-left: 20px;
 }
 
 .Exercise-List {
-    gap: 15px;
+  gap: 15px;
 }
 
 .Exercise::before {
-    width: 11px;
-    height: 11px;
-    gap: 0px;
-    opacity: 0px;
-    z-index: 2;
-content: '';    
-background-color: white;
-border: 1px solid var(--typography-additional);
-position: absolute;
-top: 5px;
-left: 0;
-border-radius: 50%;
+  width: 11px;
+  height: 11px;
+  gap: 0px;
+  opacity: 0px;
+  z-index: 2;
+  content: "";
+  background-color: white;
+  border: 1px solid var(--typography-additional);
+  position: absolute;
+  top: 5px;
+  left: 0;
+  border-radius: 50%;
 }
 
 .Exercise.completed::before {
-background-color: black;
-border: none;
-
+  background-color: black;
+  border: none;
 }
 .Exercise.in-progress::before {
-background-color: gray;
-border: none;
-
+  background-color: gray;
+  border: none;
 }
-
-
 
 /* The scrollbar itself */
 .session-list::-webkit-scrollbar {
-    width: 10px; /* Width of the vertical scrollbar */
-    /* height: 8px; Height of the horizontal scrollbar */
-  }
-  
-  /* The draggable thumb (handle) of the scrollbar */
-  .session-list::-webkit-scrollbar-thumb {
-    width: 10px;
-    background-color: #888; /* Color of the scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for the thumb */
-    border: 2px solid #f1f1f1; /* Adds a border to the thumb */
-  }
-  
-  /* The track of the scrollbar */
-  .session-list::-webkit-scrollbar-track {
-    background-color: #f1f1f1; /* Background color of the scrollbar track */
-    border-radius: 10px; /* Rounded corners for the track */
-  }
-  
-  /* On hover, change thumb color */
-  .session-list::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-  }
-  
+  width: 10px; /* Width of the vertical scrollbar */
+  /* height: 8px; Height of the horizontal scrollbar */
+}
 
-  /* buttons */
+/* The draggable thumb (handle) of the scrollbar */
+.session-list::-webkit-scrollbar-thumb {
+  width: 10px;
+  background-color: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+  border: 2px solid #f1f1f1; /* Adds a border to the thumb */
+}
 
-  .monthly-goal-buttons {
-    gap: 8px;
-    display: flex;
-  }
+/* The track of the scrollbar */
+.session-list::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Background color of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
 
+/* On hover, change thumb color */
+.session-list::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+/* buttons */
+
+.monthly-goal-buttons {
+  gap: 8px;
+  display: flex;
+}
+
+/*****  
+
+React Date Picker
+
+*****/
+.react-datepicker-wrapper input {
+  width: 80px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}

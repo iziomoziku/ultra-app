@@ -194,6 +194,20 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const markScheduleComplete = async (scheduleID: string) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_API_URL
+        }/schedule/complete/${scheduleID}`
+      );
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   /**
    * Get all routines
    * @returns
@@ -609,6 +623,7 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         addExerciseSet,
         deleteExerciseSet,
         deleteSchedule,
+        markScheduleComplete,
         // addRoutineToSchedule,
         removeRoutineFromSchedule,
         markExerciseAsComplete,

@@ -72,6 +72,7 @@ export interface mainContextType {
   deleteSchedule: (scheduleID: string) => void;
   addExerciseSet: (itemID: string, exerciseID: string) => void;
   deleteExerciseSet: (exerciseID: string, setID: string) => void;
+  markScheduleComplete: (scheduleID: string) => void;
   // addRoutineToSchedule: (routine: Routine) => void
   removeRoutineFromSchedule: (itemID: string) => void;
   markExerciseAsComplete: (
