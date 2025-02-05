@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import Plus from "/Icons/plus.svg";
 import Trash from "/Icons/trash.svg";
@@ -22,7 +22,7 @@ interface Props {
 const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
   const {
     Exercises,
-    removeRoutineFromSchedule,
+    getExercise,
     deleteSchedule,
     addExerciseToSchedule,
     UpcomingSessionModal,
@@ -32,15 +32,25 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
   const [isAddingWorkout, setIsAddingWorkout] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise>(
-    currentExercises[0]
+    schedule.exercises[0]
   );
+  // const [exerciseToEdit, setExerciseToEdit] = useState<string>();
 
-  console.log("schedule", schedule);
+  // console.log("schedule", schedule);
 
-  const handleEditWorkout = (exercise: Exercise) => {
+  const handleEditWorkout = async (id: string) => {
+    const exercise = await getExercise(id);
+
+    if (!exercise) return;
+    console.log("called me", exercise);
+
     setModalShow(true);
     setExerciseToEdit(exercise);
   };
+
+  // useEffect(() => {
+  //   setModalShow(true);
+  // }, [exerciseToEdit]);
 
   if (schedule.exercises.length === 0) return;
   if (schedule.exercises.length === null) return;
@@ -157,7 +167,7 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
                     } border-0 bg-transparent pe-0 position-relative color-typography-secondary desktop-small regular`}
                     onClick={() => {
                       if (!UpcomingSessionModal && !calendarEventModal) {
-                        handleEditWorkout(exercise);
+                        handleEditWorkout(exercise.id);
                       }
                     }}
                   >

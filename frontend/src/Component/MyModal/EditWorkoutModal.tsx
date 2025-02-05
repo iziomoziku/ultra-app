@@ -15,33 +15,71 @@ type Props = {
   scheduleItem: Schedule;
 };
 
-const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
-  // const {
-  //   schedule,
-  //   addExerciseSet,
-  //   deleteExerciseSet,
-  //   markExerciseAsComplete,
-  // } = useMainContext();
+interface Set {
+  id: Number;
+  rep: string;
+  weight: string;
+}
 
-  console.log("exercise");
+const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
+  const [lastLoggedExercise] = useState<ExerciseLog | null>(() => {
+    return exercise.log.length >= 1
+      ? exercise.log[exercise.log.length - 1]
+      : null;
+  });
+
+  console.log("called again");
   console.log(exercise);
 
-  // // State to store the updated exercise
-  // const [updatedExercise, setUpdatedExercise] = useState<Exercise>(exercise);
+  const [exerciseSets, updateExerciseSets] = useState<Set[]>(() => {
+    if (!lastLoggedExercise) {
+      return [
+        {
+          id: 0,
+          rep: "0",
+          weight: "0",
+        },
+      ];
+    }
 
-  // console.log(`exercise log in edit workout modal`);
-  // console.log(exercise.log);
+    return lastLoggedExercise.set.map((s, index) => {
+      const [rep, weight] = s.split("x");
 
-  // const [exerciseSets, updateExerciseSets] = useState(() => {
-  //   return exercise.rep.map((r) => {
-  //     const [rep, weight] = r.rep.split("x");
-  //     return {
-  //       id: r.id,
-  //       rep: rep,
-  //       weight,
-  //     };
-  //   });
-  // });
+      return {
+        id: index,
+        rep: rep,
+        weight: weight,
+      };
+    });
+  });
+
+  const [exerciseNote, updateExerciseNote] = useState(
+    lastLoggedExercise ? lastLoggedExercise.note : ""
+  );
+
+  useEffect(() => {
+    updateExerciseSets(() => {
+      if (!lastLoggedExercise) {
+        return [
+          {
+            id: 0,
+            rep: "0",
+            weight: "0",
+          },
+        ];
+      }
+
+      return lastLoggedExercise.set.map((s, index) => {
+        const [rep, weight] = s.split("x");
+
+        return {
+          id: index,
+          rep: rep,
+          weight: weight,
+        };
+      });
+    });
+  }, [exercise]);
 
   // useEffect(() => {
   //   // Find the routine and exercise from the schedule
@@ -69,29 +107,41 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
   //   }
   // }, [schedule, scheduleItem.routine.id, exercise.id]); // Dependencies for re-execution
 
-  // const handleSetChange = (
-  //   id: string,
-  //   field: "rep" | "weight",
-  //   value: string
-  // ) => {
-  //   updateExerciseSets((prevSets) =>
-  //     prevSets.map((set) => (set.id === id ? { ...set, [field]: value } : set))
-  //   );
-  // };
+  const handleSetChange = (
+    id: Number,
+    field: "rep" | "weight",
+    value: string
+  ) => {
+    const update = exerciseSets?.map((set) =>
+      set.id === id ? { ...set, [field]: value } : set
+    );
 
-  // const updateExercise = () => {
-  //   const exerciseLog: ExerciseLog = {
-  //     id: uuidv4(),
-  //     set: exerciseSets.map((set) => `${set.rep}x${set.weight}`),
-  //     note: "",
-  //   };
+    updateExerciseSets(update);
+  };
 
-  //   markExerciseAsComplete(scheduleItem.id, exercise.id, exerciseLog);
+  const deleteSet = (id: Number) => {
+    if (!exerciseSets) return;
 
-  //   // setIsCompleted(true)
+    const update = exerciseSets.filter((set) => set.id !== id);
+    updateExerciseSets(update);
+  };
 
-  //   onHide();
-  // };
+  const updateExercise = () => {
+    // const exerciseLog: ExerciseLog = {
+    //   id: uuidv4(),
+    //   set: exerciseSets.map((set) => `${set.rep}x${set.weight}`),
+    //   note: "",
+    // };
+
+    // markExerciseAsComplete(scheduleItem.id, exercise.id, exerciseLog);
+
+    // setIsCompleted(true)
+
+    console.log(exerciseNote);
+    console.log(exerciseSets);
+
+    // onHide();
+  };
 
   return (
     <Modal
@@ -123,7 +173,7 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
                 <circle cx="2" cy="2" r="2" fill="#696969" />
               </svg>
               <p className="desktop-medium-button medium color-typography-secondary">
-                {/* {updatedExercise.set} sets */}
+                {lastLoggedExercise && `${lastLoggedExercise.set.length} sets`}
               </p>
             </div>
           </div>
@@ -156,10 +206,10 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
               </div>
             </div>
 
-            {exercise.log.length >= 1 && (
+            {lastLoggedExercise && (
               <div className="data-cell">
-                {exercise.log[exercise.log.length - 1].set.map((s, index) => {
-                  const [rep, weight] = s.split("x");
+                {exerciseSets.map((s, index) => {
+                  // const [rep, weight] = s.split("x");
 
                   return (
                     <div
@@ -174,25 +224,23 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
                           <input
                             className="desktop-xtra-small medium color-typography-additional edit-workout-quantity border-0 bg-grey-2 text-center"
                             type="number"
-                            value={rep}
-                            // onChange={(e) =>
-                            //   handleSetChange(id, "rep", e.target.value)
-                            // }
+                            value={s.rep}
+                            onChange={(e) =>
+                              handleSetChange(index, "rep", e.target.value)
+                            }
                           />
                           <input
                             className="desktop-xtra-small medium color-typography-additional edit-workout-quantity border-0 bg-grey-2 text-center"
                             type="number"
-                            value={weight}
-                            // onChange={(e) =>
-                            //   handleSetChange(id, "weight", e.target.value)
-                            // }
+                            value={s.weight}
+                            onChange={(e) =>
+                              handleSetChange(index, "weight", e.target.value)
+                            }
                           />
                         </div>
                         <button
                           className="bg-transparent border-0"
-                          //   onClick={() =>
-                          //     deleteExerciseSet(updatedExercise.id, id)
-                          //   }
+                          onClick={() => deleteSet(index)}
                         >
                           <img src={Trash} alt="icon" className="" />
                         </button>
@@ -202,53 +250,6 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
                 })}
               </div>
             )}
-
-            {/* <div className="data-cell">
-              {updatedExercise.log[updatedExercise.log.length - 1].set.map(
-                (s, index) => {
-                  const [rep, weight] = s.split("x");
-
-                  return (
-                    <div
-                      className="d-flex justify-content-between edit-workout-data-cell"
-                      key={index}
-                    >
-                      <span className="desktop-medium medium color-typography-secondary">
-                        {index + 1}
-                      </span>
-                      <div className="d-flex justify-content-end align-items-center quantity-weight-data-cell">
-                        <div className="d-flex justify-content-end quantity-weight-data-cell-wrapper">
-                          <input
-                            className="desktop-xtra-small medium color-typography-additional edit-workout-quantity border-0 bg-grey-2 text-center"
-                            type="number"
-                            value={rep}
-                            // onChange={(e) =>
-                            //   handleSetChange(id, "rep", e.target.value)
-                            // }
-                          />
-                          <input
-                            className="desktop-xtra-small medium color-typography-additional edit-workout-quantity border-0 bg-grey-2 text-center"
-                            type="number"
-                            value={weight}
-                            // onChange={(e) =>
-                            //   handleSetChange(id, "weight", e.target.value)
-                            // }
-                          />
-                        </div>
-                        <button
-                          className="bg-transparent border-0"
-                          //   onClick={() =>
-                          //     deleteExerciseSet(updatedExercise.id, id)
-                          //   }
-                        >
-                          <img src={Trash} alt="icon" className="" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-            </div> */}
           </div>
           <div className="d-flex gap-2 desktop-regular color-typography-secondary">
             <img src={IncreaseArrow} alt="" />
@@ -262,14 +263,16 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
           rows={2}
           placeholder="Leave notes here |"
           name="note"
+          value={exerciseNote}
           id="note"
+          onChange={(e) => updateExerciseNote(e.target.value)}
         ></textarea>
       </div>
       {!exercise.complete && (
         <Modal.Footer className="border-0 d-flex m-0 p-0">
           <Button
             className="flex-1 button-varriant-2 desktop-medium medium"
-            // onClick={updateExercise}
+            onClick={updateExercise}
           >
             Complete
           </Button>
