@@ -16,6 +16,7 @@ namespace api.Models
 
         public int Set {get; set;}
 
+        // not needed, will need to remove
         public List<Rep> Rep { get; set; } = new();
 
         public List<ExerciseLog> Log { get; set; } = new();
@@ -45,6 +46,7 @@ namespace api.Models
     {
         public required string Id {get; set;}
 
+        // rep x weight - ex 10x270 
         public List<string?> Set {get; set;}
         
         public string? Note {get; set;}

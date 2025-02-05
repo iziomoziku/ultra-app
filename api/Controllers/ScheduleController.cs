@@ -185,6 +185,7 @@ namespace api.Controllers
                                     .Include(s => s.Routine)
                                     .ThenInclude(r => r.Exercises)
                                     .Include(s => s.Exercises)
+                                    .ThenInclude(e => e.Log)
                                     .Where(e => e.UserId == userId)
                                     .OrderBy(s => s.Order)
                                     .ToListAsync();

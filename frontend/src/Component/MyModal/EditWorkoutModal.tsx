@@ -4,9 +4,9 @@ import { Exercise, ExerciseLog, Schedule } from "../../Interface";
 import Plus from "/Icons/plus.svg";
 import Trash from "/Icons/trash.svg";
 import IncreaseArrow from "/Icons/increaseArrow.svg";
-// import { useMainContext } from "../../Context/mainContext";
+import { useMainContext } from "../../Context/mainContext";
 import { useEffect, useState } from "react";
-// import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   show: boolean;
@@ -22,11 +22,12 @@ interface Set {
 }
 
 const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
-  const [lastLoggedExercise] = useState<ExerciseLog | null>(() => {
-    return exercise.log.length >= 1
-      ? exercise.log[exercise.log.length - 1]
-      : null;
-  });
+  const [lastLoggedExercise, updateLastLogExercise] =
+    useState<ExerciseLog | null>(() => {
+      return exercise.log.length >= 1 ? exercise.log[0] : null;
+    });
+
+  const { LogExercise } = useMainContext();
 
   /**
    * stores/updates the sets
@@ -64,8 +65,14 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
    * update the sets when exercise is reloaded
    */
   useEffect(() => {
+    // update the log exercise
+    updateLastLogExercise(() => {
+      return exercise.log.length >= 1 ? exercise.log[0] : null;
+    });
+
+    // update the sets
     updateExerciseSets(() => {
-      if (!lastLoggedExercise) {
+      if (exercise.log.length < 1) {
         return [
           {
             id: 0,
@@ -75,7 +82,7 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
         ];
       }
 
-      return lastLoggedExercise.set.map((s, index) => {
+      return exercise.log[0].set.map((s, index) => {
         const [rep, weight] = s.split("x");
 
         return {
@@ -84,6 +91,15 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
           weight: weight,
         };
       });
+    });
+
+    // update note
+    updateExerciseNote(() => {
+      if (exercise.log.length < 1) {
+        return "";
+      }
+
+      return exercise.log[0].note;
     });
   }, [exercise]);
 
@@ -117,6 +133,9 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
     updateExerciseSets(update);
   };
 
+  /**
+   * Add a new set to the exercise
+   */
   const addSet = () => {
     const newSet = {
       id: exerciseSets.length + 1,
@@ -130,21 +149,17 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
   /**
    * update the exercise to the DB
    */
-  const updateExercise = () => {
-    // const exerciseLog: ExerciseLog = {
-    //   id: uuidv4(),
-    //   set: exerciseSets.map((set) => `${set.rep}x${set.weight}`),
-    //   note: "",
-    // };
+  const updateExercise = async () => {
+    const newLog = {
+      id: uuidv4(),
+      set: exerciseSets.map((set) => `${set.rep}x${set.weight}`),
+      note: exerciseNote,
+      date: new Date(),
+    };
 
-    // markExerciseAsComplete(scheduleItem.id, exercise.id, exerciseLog);
+    LogExercise(newLog, exercise.id, scheduleItem.id);
 
-    // setIsCompleted(true)
-
-    console.log(exerciseNote);
-    console.log(exerciseSets);
-
-    // onHide();
+    onHide();
   };
 
   return (

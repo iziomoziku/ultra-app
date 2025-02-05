@@ -5,6 +5,7 @@ export interface Schedule {
   order: number;
   exercises: Exercise[];
   note: string;
+  completedExercises: string[];
 }
 
 export interface Plan {
@@ -62,6 +63,7 @@ export interface mainContextType {
   setPlans: React.Dispatch<React.SetStateAction<Plan[]>>;
   Exercises: Exercise[];
   setExercises: React.Dispatch<React.SetStateAction<Exercise[]>>;
+  LogExercise: (log: ExerciseLog, id: string, scheduleID: string) => void;
   // updatedSchedule: (routine: Routine) => void
   // updateScheduledRoutine: (routineID: string, exercise: Exercise) => void
   addExerciseToRoutine: (routineID: string, exerciseID: string) => void;

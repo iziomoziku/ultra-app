@@ -13,10 +13,14 @@ namespace api.Controllers
     public class ExerciseController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IUserValidationService _userValidationService;
 
-        public ExerciseController(AppDbContext context)
+
+        public ExerciseController(AppDbContext context, IUserValidationService userValidationService)
         {
             _context = context;
+            _userValidationService = userValidationService;
+
         }
 
         // function to remove exercise from routine
@@ -106,13 +110,17 @@ namespace api.Controllers
         Add an exercise log to the exercise
         ****/
         [Authorize]
-        [HttpPost("log")] // http://localhost:8081/api/exercise/log?id=e1
-        public async Task<IActionResult> LogExercise(ExerciseLog log, string id)
+        [HttpPost("log")] // http://localhost:8081/api/exercise/log?id=e1&scheduleId=s1
+        public async Task<IActionResult> LogExercise([FromBody] ExerciseLog log, string id, string scheduleId)
         {
             if (log == null)
             {
                 return BadRequest("Exercise log is required.");
             }
+
+            // validate user
+            var (user, errorResult) = await _userValidationService.ValidateUserAsync(User);
+            if (errorResult != null) return errorResult;
 
             // Use GetExercise to fetch the exercise
             var result = await GetExercise(id);
@@ -127,7 +135,26 @@ namespace api.Controllers
                 // Save changes to the database
                 await _context.SaveChangesAsync();
 
-                return Ok("Log added successfully.");
+                // ✅ Find the schedule and mark the exercise as complete
+                var schedule = await _context.Schedules
+                    .FirstOrDefaultAsync(s => s.Id == scheduleId);
+
+                if (schedule != null && !schedule.CompletedExercises.Contains(id))
+                {
+                    schedule.CompletedExercises.Add(id);
+                    await _context.SaveChangesAsync();
+                }
+
+                var updatedschedule = await _context.Schedules
+                                    .Include(s => s.Routine)
+                                    .ThenInclude(r => r.Exercises)
+                                    .Include(s => s.Exercises)
+                                    .ThenInclude(e => e.Log)
+                                    .Where(e => e.UserId == user.Id)
+                                    .OrderBy(s => s.Order)
+                                    .ToListAsync();
+
+                return Ok(updatedschedule);
             }
 
             // Handle errors from GetExercise

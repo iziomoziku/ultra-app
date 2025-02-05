@@ -34,7 +34,6 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise>(
     schedule.exercises[0]
   );
-  // const [exerciseToEdit, setExerciseToEdit] = useState<string>();
 
   // console.log("schedule", schedule);
 
@@ -47,10 +46,6 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
     setModalShow(true);
     setExerciseToEdit(exercise);
   };
-
-  // useEffect(() => {
-  //   setModalShow(true);
-  // }, [exerciseToEdit]);
 
   if (schedule.exercises.length === 0) return;
   if (schedule.exercises.length === null) return;
@@ -163,7 +158,9 @@ const UpcomingSession = ({ schedule, editMode, list, type }: Props) => {
                 <div key={index} className="d-flex align-items-start gap-2">
                   <button
                     className={`Exercise ${
-                      exercise.complete ? "completed" : ""
+                      schedule.completedExercises.includes(exercise.id)
+                        ? "completed"
+                        : ""
                     } border-0 bg-transparent pe-0 position-relative color-typography-secondary desktop-small regular`}
                     onClick={() => {
                       if (!UpcomingSessionModal && !calendarEventModal) {

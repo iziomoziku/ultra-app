@@ -16,6 +16,8 @@ namespace api.Models
 
         public string? Note {get; set;}
 
+        public List<string> CompletedExercises { get; set; } = new();
+
         public Routine? Routine { get; set; } // Navigation property
 
         // Composite foreign key to Routine

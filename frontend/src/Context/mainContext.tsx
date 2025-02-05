@@ -32,14 +32,14 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
       const schedules = await getAllSchedules(); // Fetch the schedules
       const routines = await getAllRoutines();
       const exercise = await getAllExercises();
-      // console.log(schedules)
-      console.log("schedules to be saved in state", schedules);
+
+      // console.log("schedules to be saved in state", schedules);
       setSchedule(schedules); // Update the state with the fetched data
 
-      console.log("routines to be saved in state", routines);
+      // console.log("routines to be saved in state", routines);
       setRoutine(routines);
 
-      console.log("exercise to be saved in state", exercise);
+      // console.log("exercise to be saved in state", exercise);
       setExercises(exercise);
     };
 
@@ -66,6 +66,8 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
       );
       const data = response.data;
 
+      console.log(data);
+
       // Transform data to fit the frontend structure
       const transformedSchedules: Schedule[] = data.map((item: any) => ({
         id: item.id,
@@ -74,6 +76,7 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         order: item.order,
         exercises: item.exercises,
         note: item.note,
+        completedExercises: item.completedExercises,
       }));
 
       return transformedSchedules;
@@ -102,6 +105,7 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         order: item.order,
         exercises: item.exercises,
         note: item.note,
+        completedExercises: item.completedExercises,
       }));
 
       setSchedule(updatedSchedule);
@@ -144,6 +148,7 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
           order: item.order,
           exercises: item.exercises, // Ensure this is the correct property
           note: item.note,
+          completedExercises: item.completedExercises,
         }));
 
       setSchedule(updatedSchedule);
@@ -180,6 +185,7 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
           order: item.order,
           exercises: item.exercises, // Ensure this is the correct property
           note: item.note,
+          completedExercises: item.completedExercises,
         }));
 
       setSchedule(updatedSchedule);
@@ -313,6 +319,50 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error fetching schedules:", error);
       return null;
+    }
+  };
+
+  /**
+   * Add a new log to the exercise
+   * @param log
+   * @param id
+   * @param scheduleID
+   */
+  const LogExercise = async (
+    log: ExerciseLog,
+    id: string,
+    scheduleID: string
+  ) => {
+    try {
+      const response = await axios.post<Schedule[]>(
+        `${
+          import.meta.env.VITE_BACKEND_API_URL
+        }/exercise/log?id=${id}&scheduleId=${scheduleID}`,
+        log
+      );
+
+      const data = response.data;
+
+      const updatedSchedule: Schedule[] = data
+        .filter(
+          (item: any) =>
+            item.exercises &&
+            Array.isArray(item.exercises) &&
+            item.exercises.length > 0
+        )
+        .map((item: any) => ({
+          id: item.id,
+          complete: item.complete,
+          routine: item.routine,
+          order: item.order,
+          exercises: item.exercises, // Ensure this is the correct property
+          note: item.note,
+          completedExercises: item.completedExercises,
+        }));
+
+      setSchedule(updatedSchedule);
+    } catch (error) {
+      console.error("Failed to log exercise:", error);
     }
   };
 
@@ -551,6 +601,7 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         // updatedSchedule,
         Exercises,
         setExercises,
+        LogExercise,
         // updateScheduledRoutine,
         addExerciseToRoutine,
         addExerciseToSchedule,
