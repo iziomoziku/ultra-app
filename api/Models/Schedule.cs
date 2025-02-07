@@ -9,6 +9,8 @@ namespace api.Models
 
         public bool Complete {get; set;}
 
+        public DateTime Date { get; set; } = DateTime.UtcNow;
+
         public int Order { get; set; } 
 
         // Many to Many relationship

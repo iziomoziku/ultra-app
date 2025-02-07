@@ -2,14 +2,13 @@
 import Edit from "/Icons/edit.svg";
 import "./Session.css";
 import Check from "/Icons/check.svg";
-import Close from "/Icons/close.svg";
+// import Close from "/Icons/close.svg";
 import EditSessionModal from "../MyModal/EditSessionModal";
 import UpcomingSession from "../Session/UpcomingSession";
 import { useMainContext } from "../../Context/mainContext";
-import { useEffect, useState } from "react";
-// import { formatDistance, subDays } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useState } from "react";
 
 type Props = {};
 
@@ -19,11 +18,11 @@ const Session = ({}: Props) => {
     UpcomingSessionModal,
     setUpcomingSessionModal,
     markScheduleComplete,
+    sessionDate,
+    setSessionDate,
   } = useMainContext();
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-
-  useEffect(() => {}, []);
+  const [note, updateNote] = useState("");
 
   return (
     <div className="d-flex flex-column align-items-start ultra-card session">
@@ -31,7 +30,7 @@ const Session = ({}: Props) => {
         <div className="w-100 schedule-top d-flex flex-column">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="desktop-heading-level-1 desktop-heading-level-1-medium flex-1 text-start">
-              Upcoming Session
+              Upcoming Sessions
             </h2>
             <button
               className="d-flex align-items-center w-fit justify-content-end gap-1 border-0 bg-transparent"
@@ -45,8 +44,8 @@ const Session = ({}: Props) => {
           <div className="d-flex align-items-center gap-1 color-typography-additional">
             <span className="desktop-xtra-small medium">
               <DatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
+                selected={sessionDate}
+                onChange={(date) => setSessionDate(date)}
                 dateFormat="MMM dd, yyyy"
               />
             </span>
@@ -60,7 +59,7 @@ const Session = ({}: Props) => {
               <circle cx="2" cy="2.5" r="2" fill="#696969" />
             </svg>
             <span className="desktop-xtra-small regular">
-              {schedule.length} upcoming routines,
+              {schedule.length} upcoming sessions,
             </span>
             {/* <span className="desktop-xtra-small regular">
               10 workouts in total
@@ -89,34 +88,41 @@ const Session = ({}: Props) => {
         <textarea
           className="w-100 bg-grey-3 border-0"
           rows={4}
+          value={note}
+          onChange={(e) => updateNote(e.target.value)}
           placeholder="Leave notes here |"
           name="note"
           id="note"
         ></textarea>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center">
-        <p className="text-start flex-1 color-typography-secondary desktop-small medium">
-          Did you contribute to your monthly goal?
-        </p>
-        <div className="w-fit text-end d-flex justify-content-end monthly-goal-buttons">
-          <button
-            className="button-small d-flex bg-white border-0 color-typography-on-light-bg-body-primary mr-2"
-            type="button"
-            onClick={() => markScheduleComplete(schedule[0].id)}
-          >
-            <img src={Check} alt="icon" />
-            Yes
-          </button>
-          <button
+      {schedule.length >= 1 && (
+        <div className="d-flex justify-content-between align-items-center">
+          <p className="text-start flex-1 color-typography-secondary desktop-small medium">
+            Did you contribute to your monthly goal?
+          </p>
+          <div className="w-fit text-end d-flex justify-content-end monthly-goal-buttons">
+            <button
+              className="button-small d-flex bg-white border-0 color-typography-on-light-bg-body-primary mr-2"
+              type="button"
+              onClick={() => {
+                updateNote("");
+                markScheduleComplete(schedule[0].id, sessionDate, note);
+              }}
+            >
+              <img src={Check} alt="icon" />
+              Yes
+            </button>
+            {/* <button
             className="button-small d-flex bg-white border-0 color-typography-on-light-bg-body-primary"
             type="button"
           >
             <img src={Close} alt="icon" />
             No
-          </button>
+          </button> */}
+          </div>
         </div>
-      </div>
+      )}
 
       <EditSessionModal
         show={UpcomingSessionModal}

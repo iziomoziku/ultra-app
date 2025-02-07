@@ -54,6 +54,7 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
   const [UpcomingSessionModal, setUpcomingSessionModal] = useState(false);
   const [calendarEventModal, setCalendarEventModal] = useState(false);
   const [Events, setEvents] = useState<Event[]>([]);
+  const [sessionDate, setSessionDate] = useState<Date | null>(new Date());
 
   /**
    * Get all schedules
@@ -194,15 +195,42 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const markScheduleComplete = async (scheduleID: string) => {
+  const markScheduleComplete = async (
+    scheduleID: string,
+    sessionDate: Date | null,
+    Note: string
+  ) => {
     try {
-      const response = await axios.get(
+      const response = await axios.post<Schedule[]>(
         `${
           import.meta.env.VITE_BACKEND_API_URL
-        }/schedule/complete/${scheduleID}`
+        }/schedule/complete/${scheduleID}`,
+        {
+          Note,
+          Date: sessionDate || new Date(),
+        }
       );
 
-      console.log(response.data);
+      const data = response.data;
+
+      const updatedSchedule: Schedule[] = data
+        .filter(
+          (item: any) =>
+            item.exercises &&
+            Array.isArray(item.exercises) &&
+            item.exercises.length > 0
+        )
+        .map((item: any) => ({
+          id: item.id,
+          complete: item.complete,
+          routine: item.routine,
+          order: item.order,
+          exercises: item.exercises, // Ensure this is the correct property
+          note: item.note,
+          completedExercises: item.completedExercises,
+        }));
+
+      setSchedule(updatedSchedule);
     } catch (error) {
       console.log(error);
     }
@@ -615,6 +643,8 @@ export const MainProvider = ({ children }: { children: ReactNode }) => {
         // updatedSchedule,
         Exercises,
         setExercises,
+        sessionDate,
+        setSessionDate,
         LogExercise,
         // updateScheduledRoutine,
         addExerciseToRoutine,

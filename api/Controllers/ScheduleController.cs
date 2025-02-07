@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
 
 
 namespace api.Controllers
@@ -47,10 +48,7 @@ namespace api.Controllers
         private async Task<(List<Schedule>? schedules, IActionResult? errorResult)> GetAllScheduleEntityAsync(IdentityUser user)
         {
 
-            if (user == null)
-            {
-                return (null, BadRequest("User not found"));
-            }
+            if (user == null) return (null, BadRequest("User not found"));
 
             var schedules = await _context.Schedules
                                     .Include(s => s.Routine)
@@ -136,18 +134,24 @@ namespace api.Controllers
         }
 
         
+
+        public class MarkCompleteRequests
+        {
+            public string? Note { get; set; }
+            public DateTime Date { get; set; }
+        }
+
         /**
         Mark a schedule as completed
         **/
-        [HttpGet("complete/{id}")]
+        [HttpPost("complete/{id}")]
         [Authorize]
-        public async Task<IActionResult> MarkComplete(string id)
+        public async Task<IActionResult> MarkComplete(string id, [FromBody] MarkCompleteRequests requests)
         {
 
-            if (id == null)
-            {
-                return BadRequest("Schedule id is required.");
-            }
+            if (id == null) return BadRequest("Schedule id is required.");
+
+            if (requests.Date == default(DateTime)) return BadRequest("Date is required");
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized("UserId not found");
@@ -163,6 +167,9 @@ namespace api.Controllers
 
             // mark as complete
             schedule.Complete = true;
+            schedule.Date = requests.Date;
+            if (!string.IsNullOrEmpty(requests.Note)) schedule.Note = requests.Note;
+            
             // Update the the DB
             _context.Schedules.Update(schedule);
             await _context.SaveChangesAsync();
@@ -171,9 +178,14 @@ namespace api.Controllers
             var (updatedSchedule, error) = await GetAllScheduleEntityAsync(user);
             if (error != null) return error;
 
-            var newUpdateSchedule = await ReorderSchedules(updatedSchedule);
+            // var newUpdateSchedule = await ReorderSchedules(updatedSchedule);
+            IActionResult reorderResult = await ReorderSchedules(updatedSchedule);
 
-            return Ok(newUpdateSchedule);
+
+            // Extract the actual object from IActionResult
+            if (reorderResult is OkObjectResult okResult && okResult.Value is List<Schedule> extractedSchedules) return Ok(extractedSchedules);
+
+            return reorderResult;
         }
 
         /*******
@@ -242,10 +254,6 @@ namespace api.Controllers
             if (reorderedSchedules == null || reorderedSchedules.Count == 0)
                 return BadRequest("Reordered schedules cannot be null or empty.");
 
-            // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            // if (userId == null)
-            //     return Unauthorized("UserId not found in token.");
-
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized("UserId not found");
 
@@ -270,6 +278,9 @@ namespace api.Controllers
 
             var (updatedSchedule, error) = await GetAllScheduleEntityAsync(user);
             if (error != null) return error;
+
+            Console.WriteLine($"this is new ordered schedule {JsonSerializer.Serialize(updatedSchedule, new JsonSerializerOptions { WriteIndented = true })}");
+
 
             return Ok(updatedSchedule);
         }

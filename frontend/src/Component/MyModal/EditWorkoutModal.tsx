@@ -22,6 +22,8 @@ interface Set {
 }
 
 const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
+  const { sessionDate } = useMainContext();
+
   const [lastLoggedExercise, updateLastLogExercise] =
     useState<ExerciseLog | null>(() => {
       return exercise.log.length >= 1 ? exercise.log[0] : null;
@@ -147,14 +149,14 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
   };
 
   /**
-   * update the exercise to the DB
+   * mark exercise as complete
    */
-  const updateExercise = async () => {
+  const markExerciseComplete = async () => {
     const newLog = {
       id: uuidv4(),
       set: exerciseSets.map((set) => `${set.rep}x${set.weight}`),
       note: exerciseNote,
-      date: new Date(),
+      date: sessionDate || new Date(),
     };
 
     LogExercise(newLog, exercise.id, scheduleItem.id);
@@ -289,7 +291,7 @@ const EditWorkout = ({ show, onHide, exercise, scheduleItem }: Props) => {
         <Modal.Footer className="border-0 d-flex m-0 p-0">
           <Button
             className="flex-1 button-varriant-2 desktop-medium medium"
-            onClick={updateExercise}
+            onClick={markExerciseComplete}
           >
             Complete
           </Button>

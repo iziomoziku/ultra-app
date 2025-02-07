@@ -63,6 +63,8 @@ export interface mainContextType {
   setPlans: React.Dispatch<React.SetStateAction<Plan[]>>;
   Exercises: Exercise[];
   setExercises: React.Dispatch<React.SetStateAction<Exercise[]>>;
+  sessionDate: Date | null;
+  setSessionDate: React.Dispatch<React.SetStateAction<Date | null>>;
   LogExercise: (log: ExerciseLog, id: string, scheduleID: string) => void;
   // updatedSchedule: (routine: Routine) => void
   // updateScheduledRoutine: (routineID: string, exercise: Exercise) => void
@@ -72,7 +74,11 @@ export interface mainContextType {
   deleteSchedule: (scheduleID: string) => void;
   addExerciseSet: (itemID: string, exerciseID: string) => void;
   deleteExerciseSet: (exerciseID: string, setID: string) => void;
-  markScheduleComplete: (scheduleID: string) => void;
+  markScheduleComplete: (
+    scheduleID: string,
+    sessionDate: Date | null,
+    Note: string
+  ) => void;
   // addRoutineToSchedule: (routine: Routine) => void
   removeRoutineFromSchedule: (itemID: string) => void;
   markExerciseAsComplete: (
